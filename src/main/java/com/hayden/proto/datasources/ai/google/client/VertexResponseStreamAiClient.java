@@ -16,7 +16,7 @@ import com.hayden.proto.datasource_proto.inputs.request.RequestConstructContract
 import com.hayden.proto.datasource_proto.inputs.request.ai_request.AiRequestConstructProto;
 import com.hayden.proto.proto.Prototype;
 import com.hayden.utilitymodule.result.Result;
-import com.hayden.utilitymodule.result.error.Error;
+import com.hayden.utilitymodule.result.error.ErrorCollect;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -61,7 +61,7 @@ public class VertexResponseStreamAiClient implements
 
         if (!failed.isEmpty()) {
             return Result.err(new DataSourceClientPrototypeError(Sets.newHashSet(
-                    new Error.StandardError("No matching prototype for %s".formatted(request.getClass().getSimpleName())))));
+                    new ErrorCollect.StandardError("No matching prototype for %s".formatted(request.getClass().getSimpleName())))));
         }
 
         var session = Optional.ofNullable(request.vertexSessionKey())

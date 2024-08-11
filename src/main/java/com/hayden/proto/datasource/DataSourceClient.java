@@ -8,7 +8,7 @@ import com.hayden.proto.datasource_proto.data.wiretype.WireContractProto;
 import com.hayden.proto.ty.CompositePrototypedBehavior;
 import com.hayden.utilitymodule.result.Result;
 import com.hayden.utilitymodule.result.error.AggregateError;
-import com.hayden.utilitymodule.result.error.Error;
+import com.hayden.utilitymodule.result.error.ErrorCollect;
 
 import java.util.Set;
 
@@ -26,7 +26,7 @@ public interface DataSourceClient<
     interface DataRecordResponseRecord<W extends WireContractProto>
             extends ResponseRecord<W, DataRecordContractProto, DataRecordResponseContract<W>> {}
 
-    record DataSourceClientPrototypeError(Set<Error> errors)  implements AggregateError { }
+    record DataSourceClientPrototypeError(Set<ErrorCollect> errors)  implements AggregateError { }
 
     Result<RES, DataSourceClientPrototypeError> send(REQ request);
 

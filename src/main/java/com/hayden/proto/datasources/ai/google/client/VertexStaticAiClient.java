@@ -1,6 +1,5 @@
 package com.hayden.proto.datasources.ai.google.client;
 
-import com.google.cloud.vertexai.api.Content;
 import com.google.cloud.vertexai.api.GenerateContentResponse;
 import com.hayden.proto.datasources.ai.google.data.VertexStaticWireProto;
 import com.hayden.proto.datasources.ai.google.request.VertexRequest;
@@ -10,9 +9,9 @@ import com.hayden.utilitymodule.result.Result;
 public class VertexStaticAiClient implements VertexClient<VertexStaticWireProto, VertexStaticAiClient.VertexStaticResponseRecord> {
 
     public record VertexStaticResponseRecord(GenerateContentResponse contentResponses)
-            implements DataRecordResponseRecord<VertexStaticWireProto> {
+            implements DataRecordResponseRecord {
         @Override
-        public DataRecordResponseContract<VertexStaticWireProto> proto() {
+        public DataRecordResponseContract proto() {
             return null;
         }
     }

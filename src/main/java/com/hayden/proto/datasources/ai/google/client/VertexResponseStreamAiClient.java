@@ -6,6 +6,10 @@ import com.google.cloud.vertexai.generativeai.ChatSession;
 import com.google.cloud.vertexai.generativeai.GenerativeModel;
 import com.google.cloud.vertexai.generativeai.ResponseStream;
 import com.google.common.collect.Sets;
+import com.hayden.proto.datasource_proto.cardinality.Many;
+import com.hayden.proto.datasource_proto.cardinality.Plural;
+import com.hayden.proto.datasource_proto.data.response.DataRecordResponseConstructContractProto;
+import com.hayden.proto.datasource_proto.data.response.ResponseConstructContractProto;
 import com.hayden.proto.datasources.ai.google.data.VertexDataRecordProto;
 import com.hayden.proto.datasources.ai.google.request.VertexRequest;
 import com.hayden.proto.datasource_proto.DataRecordContractProto;
@@ -18,6 +22,7 @@ import com.hayden.proto.proto.Prototype;
 import com.hayden.utilitymodule.result.Result;
 import com.hayden.utilitymodule.result.error.ErrorCollect;
 import jakarta.annotation.Nullable;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
@@ -36,16 +41,21 @@ public class VertexResponseStreamAiClient implements
 
     private final Map<String, VertexAiSession> sessions = new ConcurrentHashMap<>();
 
-    private final int contextLength;
-    private final String projectId;
-    private final String modelName;
+    private final VertexDataSourceClientContractProto clientContractProto;
 
-    public record VertexStreamingResponseRecord(ResponseStream<GenerateContentResponse> contentResponses, @Nullable VertexSessionKey sessionKey)
-            implements DataRecordResponseRecord<StreamingWireProto.PermittingResponseStream<VertexDataRecordProto>> {
+    public interface VertexResponseStreamDataRecord extends DataRecordResponseContract {
+        @Override
+        Any<ResponseConstructContractProto> responseContracts();
+    }
+
+    public record VertexStreamingResponseRecord(ResponseStream<GenerateContentResponse> contentResponses,
+                                                @Nullable VertexSessionKey sessionKey,
+                                                VertexResponseStreamAiClient self)
+            implements DataRecordResponseRecord {
 
         @Override
-        public DataRecordResponseContract<StreamingWireProto.PermittingResponseStream<VertexDataRecordProto>> proto() {
-            return null;
+        public VertexResponseStreamDataRecord proto() {
+            return self.clientContractProto.response;
         }
     }
 
@@ -67,44 +77,87 @@ public class VertexResponseStreamAiClient implements
         var session = Optional.ofNullable(request.vertexSessionKey())
                 .map(VertexSessionKey::wrapped)
                 .map(sessions::get)
-                .orElseGet(() -> createSession(request));
+                .orElseGet(() -> createGetSessionFromUserSessionId(request));
 
-        return Result.ok(new VertexStreamingResponseRecord(session.chatSession().sendMessageStream(request.content().wrapped()), session.sessionKey()));
+        return Result.ok(new VertexStreamingResponseRecord(session.chatSession().sendMessageStream(request.content().wrapped()), session.sessionKey(), this));
     }
 
     @SneakyThrows
-    private @NotNull VertexAiSession createSession(VertexRequest request) {
-        VertexAI vertexAI = new VertexAI(request.projectId().wrapped(), request.location().wrapped());
-        GenerativeModel model = new GenerativeModel("gemini-pro", vertexAI);
-        String sessionKey = Optional.ofNullable(request.userSessionId()).orElse(UUID.randomUUID().toString());
-        VertexAiSession session = new VertexAiSession(model.startChat(), vertexAI, new VertexSessionKey(sessionKey));
-        sessions.put(sessionKey, session);
-        return session;
+    private @NotNull VertexAiSession createGetSessionFromUserSessionId(VertexRequest request) {
+        return sessions.compute(request.userSessionId(), (key, prev) -> Optional.ofNullable(prev)
+                .orElseGet(() -> {
+                    VertexAI vertexAI = new VertexAI(request.vertexProjectId().wrapped(), request.vertexLocation().wrapped());
+                    GenerativeModel model = new GenerativeModel(request.vertexModelName().wrapped(), vertexAI);
+                    String sessionKey = Optional.ofNullable(request.userSessionId()).orElse(UUID.randomUUID().toString());
+                    return new VertexAiSession(model.startChat(), vertexAI, new VertexSessionKey(sessionKey));
+                }));
     }
 
+    @Builder
     public record VertexDataSourceClientContractProto(
-            int contextLength,
-            String modelName,
-            String projectId
+            Any<AiRequestConstructProto>  requestConstructs,
+            VertexResponseStreamDataRecord response
     ) implements DataSourceClientContractProto {
-        @Override
-        public Any<AiRequestConstructProto> requestContracts() {
-            return () -> new AiRequestConstructProto[] {
-                    new AiRequestConstructProto.ContextLength.PermitsNumberContractProto(contextLength),
-                    new AiRequestConstructProto.AiModelNameProto.PermitsStringContractProto(modelName),
-                    new AiRequestConstructProto.AiProjectContractProtoProto.PermitsStringContractProto(projectId)
-            };
+
+        public VertexDataSourceClientContractProto(
+                int contextLength,
+                String modelLocation,
+                String projectId,
+                String modelName
+        ) {
+            this(
+                    () -> new AiRequestConstructProto[]{
+                            new AiRequestConstructProto.AiContextLengthContractProto.PermitsNumberContractProto(contextLength),
+                            new AiRequestConstructProto.AiModelNameProto.PermitsStringContractProto(modelName),
+                            new AiRequestConstructProto.AiProjectContractProtoProto.PermitsStringContractProto(projectId),
+                            new AiRequestConstructProto.AiModelLocationContractProto.PermitsStringContractProto(modelLocation)
+                    },
+                    responseContracts(new VertexDataRecordProto(), new ResponseConstructContractProto[]{})
+            );
+        }
+
+        public VertexDataSourceClientContractProto(
+                int contextLength,
+                String modelLocation,
+                String projectId,
+                String modelName,
+                VertexDataRecordProto response,
+                ResponseConstructContractProto[] responseConstructContractProtos
+        ) {
+            this(
+                    () -> new AiRequestConstructProto[]{
+                            new AiRequestConstructProto.AiContextLengthContractProto.PermitsNumberContractProto(contextLength),
+                            new AiRequestConstructProto.AiModelNameProto.PermitsStringContractProto(modelName),
+                            new AiRequestConstructProto.AiProjectContractProtoProto.PermitsStringContractProto(projectId),
+                            new AiRequestConstructProto.AiModelLocationContractProto.PermitsStringContractProto(modelLocation)
+                    },
+                    responseContracts(response, responseConstructContractProtos)
+            );
+        }
+
+        public static VertexResponseStreamDataRecord responseContracts(VertexDataRecordProto response,
+                                                                       ResponseConstructContractProto[] responseConstructContractProtos) {
+            DataRecordResponseConstructContractProto dataRecordResponseConstructContractProto = () -> (Many<DataRecordContractProto>) () -> response;
+            var t = Arrays.copyOf(responseConstructContractProtos, responseConstructContractProtos.length + 1);
+            t[responseConstructContractProtos.length] = dataRecordResponseConstructContractProto;
+            return () -> (Any<ResponseConstructContractProto>) () -> t;
         }
 
         @Override
-        public Any<DataRecordContractProto> responseContracts() {
-            return null;
+        public Any<AiRequestConstructProto> requestContracts() {
+            return this.requestConstructs;
         }
+
+        @Override
+        public Any<ResponseConstructContractProto> responseContracts() {
+            return response.responseContracts();
+        }
+
     }
 
     @Override
     public VertexDataSourceClientContractProto proto() {
-        return new VertexDataSourceClientContractProto(contextLength, modelName, projectId);
+        return clientContractProto;
     }
 
     @Override

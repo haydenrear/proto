@@ -5,7 +5,9 @@ import com.hayden.proto.proto.Prototype;
 public sealed interface ResponseConstructContractProto extends Prototype
         permits
             ResponseCodeContractProto,
-            ResponseHeaderContractProto {
+            ResponseHeaderContractProto,
+            DataRecordResponseConstructContractProto,
+            WireTypeResponseConstructContractProto{
 
 
 

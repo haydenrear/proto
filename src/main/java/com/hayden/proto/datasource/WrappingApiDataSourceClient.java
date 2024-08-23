@@ -7,10 +7,9 @@ import com.hayden.proto.datasource_proto.data.wiretype.WireContractProto;
 public interface WrappingApiDataSourceClient<
             T,
             WIRE_CT extends WireContractProto,
-            RES extends DataSourceClient.DataRecordResponseRecord<WIRE_CT>,
+            RES extends DataSourceClient.DataRecordResponseRecord,
             REQ extends ApiRequest<T, StaticWireProto>
         >
-
         extends DataSourceClient<T, REQ, RES, StaticWireProto, WIRE_CT> {
 
 }

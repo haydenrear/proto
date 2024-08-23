@@ -2,14 +2,25 @@ package com.hayden.proto.datasource_proto.data.response;
 
 import com.hayden.proto.datasource_proto.DataRecordContractProto;
 import com.hayden.proto.datasource_proto.cardinality.ManyOf;
+import com.hayden.proto.datasource_proto.cardinality.Plural;
 import com.hayden.proto.datasource_proto.data.wiretype.WireContractProto;
 import com.hayden.proto.proto.Prototype;
 
-public interface ResponseContractProto<W extends WireContractProto, D extends DataRecordContractProto>
+public interface ResponseContractProto
         extends Prototype {
 
-    ManyOf<ResponseConstructContractProto> responseContracts();
+    Plural<ResponseConstructContractProto> responseContracts();
 
-    W wireContract();
+    // validate the response
+//    <T> boolean isValidResponse(T in);
+
+    // validate the response
+//    <T> boolean isValidRequest(T in);
+
+    // TODO:
+//    interface Parser {}
+
+    // compile a parser
+//    <T> Parser createResponseParser(T in);
 
 }

@@ -1,6 +1,6 @@
 package com.hayden.proto.datasource_proto;
 
-import com.hayden.proto.datasource_proto.cardinality.Any;
+import com.hayden.proto.datasource_proto.cardinality.Plural;
 import com.hayden.proto.datasource_proto.client.DataSourceClientContractProto;
 import com.hayden.proto.proto.Prototype;
 
@@ -15,6 +15,6 @@ import com.hayden.proto.proto.Prototype;
  */
 public interface DataSourceContractProto extends Prototype {
 
-    Any<DataSourceClientContractProto> clientProto();
+    Plural<DataSourceClientContractProto> clientProto();
 
 }

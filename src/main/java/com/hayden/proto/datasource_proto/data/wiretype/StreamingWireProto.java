@@ -21,7 +21,7 @@ public sealed interface StreamingWireProto<T extends DataRecordContractProto> ex
             implements StreamingWireProto<T>, Permitting<T> {}
     record PermittingIterable<T extends DataRecordContractProto>(T permitting)
             implements StreamingWireProto<T>, Permitting<T> {}
-    record PermittingResponseStream<T extends DataRecordContractProto>(T permitting)
+    record  PermittingResponseStream<T extends DataRecordContractProto>(T permitting)
             implements StreamingWireProto<T>, Permitting<T> {}
     record PermittingRequestStream<T extends DataRecordContractProto>(T permitting)
             implements StreamingWireProto<T>, Permitting<T> {}

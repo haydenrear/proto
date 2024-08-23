@@ -1,7 +1,14 @@
 package com.hayden.proto.datasource_proto.cardinality;
 
-public interface ManyOf<T> {
+import java.util.Arrays;
+import java.util.stream.Stream;
+
+public interface ManyOf<T> extends Plural<T> {
 
     T[] of();
 
+    @Override
+    default Stream<T> pluralize() {
+        return Arrays.stream(of()) ;
+    }
 }

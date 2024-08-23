@@ -1,14 +1,13 @@
 package com.hayden.proto.datasources.ai.google.request;
 
 import com.google.cloud.vertexai.api.Content;
+import com.hayden.proto.datasource_proto.cardinality.Any;
+import com.hayden.proto.datasource_proto.cardinality.Plural;
 import com.hayden.proto.datasource_proto.inputs.request.StaticApiRequestContractProto;
 import com.hayden.proto.datasources.ai.google.client.VertexClient;
 import com.hayden.proto.datasources.ai.google.data.VertexDataRecordProto;
 import com.hayden.proto.datasource.inputs.request.api.ApiRequest;
-import com.hayden.proto.datasource_proto.cardinality.Any;
-import com.hayden.proto.datasource_proto.cardinality.ManyOf;
 import com.hayden.proto.datasource_proto.data.wiretype.StaticWireProto;
-import com.hayden.proto.datasource_proto.inputs.request.*;
 import com.hayden.proto.datasource_proto.inputs.request.ai_request.AiRequestConstructProto;
 import com.hayden.proto.proto.Prototype;
 import com.hayden.proto.ty.CompositePrototyped;
@@ -19,32 +18,14 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Optional;
 
 @Slf4j
-public record VertexRequest(VertexProjectId projectId, VertexLocation location, VertexContextLength contextLength,
-                            VertexContent content, @Nullable String userSessionId, @Nullable VertexClient.VertexSessionKey vertexSessionKey)
+public record VertexRequest(Plural<AiRequestConstructProto> requestConstructProtoAny,
+                            VertexContent content,
+                            @Nullable String userSessionId,
+                            @Nullable VertexClient.VertexSessionKey vertexSessionKey)
         implements ApiRequest<VertexRequest.VertexContent, StaticWireProto> {
 
-    public VertexRequest(VertexContent content, Any<AiRequestConstructProto> requestConstructProtoAny, @Nullable VertexClient.VertexSessionKey vertexSessionKey,
-                         @Nullable String userSessionId) {
-        this(
-                requestConstructProtoAny.retrieve(AiRequestConstructProto.AiProjectContractProtoProto.PermitsStringContractProto.class)
-                        .map(p -> p.permitting().value())
-                        .map(VertexProjectId::new)
-                        .orElseThrow(),
-                requestConstructProtoAny.retrieve(AiRequestConstructProto.AiModelNameProto.PermitsStringContractProto.class)
-                        .map(p -> p.permitting().value())
-                        .map(VertexLocation::new)
-                        .orElseThrow(),
-                requestConstructProtoAny.retrieve(AiRequestConstructProto.ContextLength.PermitsNumberContractProto.class)
-                        .map(p -> p.permitting().value())
-                        .map(VertexContextLength::new)
-                        .orElseThrow(),
-                content,
-                userSessionId,
-                vertexSessionKey
-        );
-    }
 
-    public VertexRequest(VertexContent content, Any<AiRequestConstructProto> requestConstructProtoAny) {
+    public VertexRequest(VertexContent content, Plural<AiRequestConstructProto> requestConstructProtoAny) {
         this(
                 content,
                 requestConstructProtoAny,
@@ -53,16 +34,57 @@ public record VertexRequest(VertexProjectId projectId, VertexLocation location, 
         );
     }
 
-    public record VertexApiRequestContract() implements StaticApiRequestContractProto {
+    public VertexRequest(VertexContent content,
+                         Plural<AiRequestConstructProto> requestConstructProtoAny,
+                         @Nullable VertexClient.VertexSessionKey vertexSessionKey,
+                         @Nullable String userSessionId) {
+        this(
+                requestConstructProtoAny,
+                content,
+                userSessionId,
+                vertexSessionKey
+        );
+    }
+
+    public VertexProjectId vertexProjectId() {
+        return requestConstructProtoAny.retrieve(AiRequestConstructProto.AiProjectContractProtoProto.PermitsStringContractProto.class)
+                .map(p -> p.permitting().value())
+                .map(VertexProjectId::new)
+                .orElseThrow();
+    }
+
+    public VertexModelName vertexModelName() {
+        return requestConstructProtoAny.retrieve(AiRequestConstructProto.AiProjectContractProtoProto.PermitsStringContractProto.class)
+                .map(p -> p.permitting().value())
+                .map(VertexModelName::new)
+                .orElseThrow();
+    }
+
+    public VertexLocation vertexLocation() {
+        return requestConstructProtoAny.retrieve(AiRequestConstructProto.AiModelNameProto.PermitsStringContractProto.class)
+                .map(p -> p.permitting().value())
+                .map(VertexLocation::new)
+                .orElseThrow();
+    }
+
+    public VertexContextLength vertexContextLength() {
+        return requestConstructProtoAny.retrieve(AiRequestConstructProto.AiContextLengthContractProto.PermitsNumberContractProto.class)
+                .map(p -> p.permitting().value())
+                .map(VertexContextLength::new)
+                .orElseThrow();
+    }
+
+    public record VertexApiRequestContract(Plural<AiRequestConstructProto> requestConstructProtoAny) implements StaticApiRequestContractProto {
 
         @Override
         public <PR extends Prototyped<P, U>, P extends Prototype, U> Optional<PR> retrieve(P toGet, CompositePrototyped<P> retrieveFrom) {
             if (retrieveFrom instanceof VertexRequest v) {
                 return Optional.ofNullable(switch(toGet) {
                     case VertexDataRecordProto ignored -> (PR) v.content;
-                    case AiRequestConstructProto.ContextLength ignored -> (PR) v.contextLength;
-                    case AiRequestConstructProto.AiProjectContractProtoProto ignored -> (PR) v.projectId;
-                    case AiRequestConstructProto.AiModelNameProto ignored -> (PR) v.location;
+                    case AiRequestConstructProto.AiContextLengthContractProto ignored -> (PR) v.vertexContextLength();
+                    case AiRequestConstructProto.AiProjectContractProtoProto ignored -> (PR) v.vertexProjectId();
+                    case AiRequestConstructProto.AiModelNameProto ignored -> (PR) v.vertexModelName();
+                    case AiRequestConstructProto.AiModelLocationContractProto ignored -> (PR) v.vertexLocation();
                     default -> {
                         log.error("Error!");
                         yield null;
@@ -74,8 +96,8 @@ public record VertexRequest(VertexProjectId projectId, VertexLocation location, 
         }
 
         @Override
-        public ManyOf<AiRequestConstructProto> requestItems() {
-            return null;
+        public Any<AiRequestConstructProto> requestItems() {
+            return () -> requestConstructProtoAny.pluralize().toArray(AiRequestConstructProto[]::new);
         }
 
         @Override
@@ -85,19 +107,27 @@ public record VertexRequest(VertexProjectId projectId, VertexLocation location, 
 
     }
 
-    public record VertexContent(Content wrapped) implements Prototyped<VertexDataRecordProto, Content> {
+    public record VertexContent(@Nullable Content wrapped) implements Prototyped<VertexDataRecordProto, Content> {
 
         @Override
         public VertexDataRecordProto proto() {
-            return null;
+            return new VertexDataRecordProto();
         }
     }
 
-    public record VertexContextLength(Integer wrapped) implements Prototyped<AiRequestConstructProto.ContextLength, Integer> {
+    public record VertexContextLength(Integer wrapped) implements Prototyped<AiRequestConstructProto.AiContextLengthContractProto, Integer> {
 
         @Override
-        public AiRequestConstructProto.ContextLength proto() {
-            return new AiRequestConstructProto.ContextLength.PermitsNumberContractProto(() -> wrapped);
+        public AiRequestConstructProto.AiContextLengthContractProto proto() {
+            return new AiRequestConstructProto.AiContextLengthContractProto.PermitsNumberContractProto(() -> wrapped);
+        }
+    }
+
+    public record VertexModelName(String wrapped) implements Prototyped<AiRequestConstructProto.AiModelNameProto, String> {
+
+        @Override
+        public AiRequestConstructProto.AiModelNameProto proto() {
+            return new AiRequestConstructProto.AiContextLengthContractProto.AiModelNameProto.PermitsStringContractProto(() -> wrapped);
         }
     }
 
@@ -119,7 +149,7 @@ public record VertexRequest(VertexProjectId projectId, VertexLocation location, 
 
     @Override
     public VertexApiRequestContract proto() {
-        return new VertexApiRequestContract();
+        return new VertexApiRequestContract(this.requestConstructProtoAny);
     }
 
 

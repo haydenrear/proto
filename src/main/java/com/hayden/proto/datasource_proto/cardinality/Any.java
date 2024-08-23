@@ -1,15 +1,16 @@
 package com.hayden.proto.datasource_proto.cardinality;
 
+import com.hayden.proto.permitting.Permitting;
+
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.stream.Stream;
 
-public interface Any<T> {
+public interface Any<T> extends Plural<T> {
 
     T[] ofMany();
 
-    default <U extends T> Optional<U> retrieve(Class<U> clazz) {
-        return Arrays.stream(ofMany()).filter(clazz::isInstance).map(clazz::cast)
-                .findAny();
+    default Stream<T> pluralize() {
+        return Arrays.stream(ofMany());
     }
-
 }

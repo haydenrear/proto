@@ -1,7 +1,6 @@
 package com.hayden.proto.datasource;
 
 import com.hayden.proto.datasource.inputs.request.Request;
-import com.hayden.proto.datasource_proto.DataRecordContractProto;
 import com.hayden.proto.datasource_proto.client.DataSourceClientContractProto;
 import com.hayden.proto.datasource_proto.data.response.ResponseContractProto;
 import com.hayden.proto.datasource_proto.data.wiretype.WireContractProto;
@@ -15,16 +14,14 @@ import java.util.Set;
 public interface DataSourceClient<
             T,
             REQ extends Request<T, REQ_WIRE>,
-            RES extends DataSourceClient.DataRecordResponseRecord<RES_WIRE>,
+            RES extends DataSourceClient.DataRecordResponseRecord,
             REQ_WIRE extends WireContractProto,
             RES_WIRE extends WireContractProto
         >
         extends CompositePrototypedBehavior<DataSourceClientContractProto> {
 
-    interface DataRecordResponseContract<W extends WireContractProto>
-            extends ResponseContractProto<W, DataRecordContractProto> {}
-    interface DataRecordResponseRecord<W extends WireContractProto>
-            extends ResponseRecord<W, DataRecordContractProto, DataRecordResponseContract<W>> {}
+    interface DataRecordResponseContract extends ResponseContractProto {}
+    interface DataRecordResponseRecord extends ResponseRecord<DataRecordResponseContract> {}
 
     record DataSourceClientPrototypeError(Set<ErrorCollect> errors)  implements AggregateError { }
 

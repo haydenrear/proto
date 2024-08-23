@@ -9,7 +9,8 @@ public sealed interface AiRequestConstructProto extends RequestConstructContract
     permits
         AiRequestConstructProto.AiModelNameProto,
         AiRequestConstructProto.AiProjectContractProtoProto,
-        AiRequestConstructProto.ContextLength {
+        AiRequestConstructProto.AiContextLengthContractProto,
+        AiRequestConstructProto.AiModelLocationContractProto {
 
     sealed interface AiModelNameProto extends AiRequestConstructProto
             permits
@@ -17,6 +18,19 @@ public sealed interface AiRequestConstructProto extends RequestConstructContract
 
         record PermitsStringContractProto(StringValueContractProto permitting)
                 implements Permitting<StringValueContractProto>, AiModelNameProto {
+            public PermitsStringContractProto(String modelName) {
+                this(() -> modelName);
+            }
+        }
+
+    }
+
+    sealed interface AiModelLocationContractProto extends AiRequestConstructProto
+            permits
+            AiModelLocationContractProto.PermitsStringContractProto {
+
+        record PermitsStringContractProto(StringValueContractProto permitting)
+                implements Permitting<StringValueContractProto>, AiModelLocationContractProto {
             public PermitsStringContractProto(String modelName) {
                 this(() -> modelName);
             }
@@ -37,13 +51,12 @@ public sealed interface AiRequestConstructProto extends RequestConstructContract
 
     }
 
-
-    sealed interface ContextLength extends AiRequestConstructProto
+    sealed interface AiContextLengthContractProto extends AiRequestConstructProto
             permits
-                ContextLength.PermitsNumberContractProto {
+                AiContextLengthContractProto.PermitsNumberContractProto {
 
         record PermitsNumberContractProto(NumberValueContractProto<Integer> permitting)
-                implements Permitting<NumberValueContractProto<Integer>>, ContextLength {
+                implements Permitting<NumberValueContractProto<Integer>>, AiContextLengthContractProto {
             public PermitsNumberContractProto(Integer permitting) {
                 this(() -> permitting);
             }

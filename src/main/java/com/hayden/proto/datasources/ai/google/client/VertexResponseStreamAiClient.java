@@ -6,10 +6,12 @@ import com.google.cloud.vertexai.generativeai.ChatSession;
 import com.google.cloud.vertexai.generativeai.GenerativeModel;
 import com.google.cloud.vertexai.generativeai.ResponseStream;
 import com.google.common.collect.Sets;
+import com.hayden.proto.datasource_proto.cardinality.All;
 import com.hayden.proto.datasource_proto.cardinality.Many;
-import com.hayden.proto.datasource_proto.cardinality.Plural;
 import com.hayden.proto.datasource_proto.data.response.DataRecordResponseConstructContractProto;
 import com.hayden.proto.datasource_proto.data.response.ResponseConstructContractProto;
+import com.hayden.proto.datasource_proto.data.response.WireTypeResponseConstructContractProto;
+import com.hayden.proto.datasource_proto.exec.ExecContractProto;
 import com.hayden.proto.datasources.ai.google.data.VertexDataRecordProto;
 import com.hayden.proto.datasources.ai.google.request.VertexRequest;
 import com.hayden.proto.datasource_proto.DataRecordContractProto;
@@ -28,6 +30,7 @@ import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,8 +39,9 @@ import java.util.stream.Collectors;
 
 @Scope(DefaultListableBeanFactory.SCOPE_PROTOTYPE)
 @RequiredArgsConstructor
+@Component
 public class VertexResponseStreamAiClient implements
-        VertexClient<StreamingWireProto.PermittingResponseStream<VertexDataRecordProto>, VertexResponseStreamAiClient.VertexStreamingResponseRecord> {
+        VertexClient<VertexResponseStreamAiClient.VertexStreamingResponseRecord> {
 
     private final Map<String, VertexAiSession> sessions = new ConcurrentHashMap<>();
 
@@ -66,7 +70,7 @@ public class VertexResponseStreamAiClient implements
     @Override
     public Result<VertexStreamingResponseRecord, DataSourceClientPrototypeError> send(VertexRequest request) {
         Set<RequestConstructContractProto> failed = Arrays.stream(this.proto().requestContracts().ofMany())
-                .filter(Predicate.not(r -> r.is(request)))
+                .filter(r -> r.is(request).isError())
                 .collect(Collectors.toSet());
 
         if (!failed.isEmpty()) {
@@ -107,10 +111,10 @@ public class VertexResponseStreamAiClient implements
         ) {
             this(
                     () -> new AiRequestConstructProto[]{
-                            new AiRequestConstructProto.AiContextLengthContractProto.PermitsNumberContractProto(contextLength),
-                            new AiRequestConstructProto.AiModelNameProto.PermitsStringContractProto(modelName),
-                            new AiRequestConstructProto.AiProjectContractProtoProto.PermitsStringContractProto(projectId),
-                            new AiRequestConstructProto.AiModelLocationContractProto.PermitsStringContractProto(modelLocation)
+                            new AiRequestConstructProto.AiContextLengthProtoValue.PermitsNumberContractProto(contextLength),
+                            new AiRequestConstructProto.AiModelNameProtoValue.PermitsStringContractProto(modelName),
+                            new AiRequestConstructProto.AiProjectProtoValue.PermitsStringContractProto(projectId),
+                            new AiRequestConstructProto.AiModelLocationProtoValue.PermitsStringContractProto(modelLocation)
                     },
                     responseContracts(new VertexDataRecordProto(), new ResponseConstructContractProto[]{})
             );
@@ -126,10 +130,10 @@ public class VertexResponseStreamAiClient implements
         ) {
             this(
                     () -> new AiRequestConstructProto[]{
-                            new AiRequestConstructProto.AiContextLengthContractProto.PermitsNumberContractProto(contextLength),
-                            new AiRequestConstructProto.AiModelNameProto.PermitsStringContractProto(modelName),
-                            new AiRequestConstructProto.AiProjectContractProtoProto.PermitsStringContractProto(projectId),
-                            new AiRequestConstructProto.AiModelLocationContractProto.PermitsStringContractProto(modelLocation)
+                            new AiRequestConstructProto.AiContextLengthProtoValue.PermitsNumberContractProto(contextLength),
+                            new AiRequestConstructProto.AiModelNameProtoValue.PermitsStringContractProto(modelName),
+                            new AiRequestConstructProto.AiProjectProtoValue.PermitsStringContractProto(projectId),
+                            new AiRequestConstructProto.AiModelLocationProtoValue.PermitsStringContractProto(modelLocation)
                     },
                     responseContracts(response, responseConstructContractProtos)
             );
@@ -140,7 +144,17 @@ public class VertexResponseStreamAiClient implements
             DataRecordResponseConstructContractProto dataRecordResponseConstructContractProto = () -> (Many<DataRecordContractProto>) () -> response;
             var t = Arrays.copyOf(responseConstructContractProtos, responseConstructContractProtos.length + 1);
             t[responseConstructContractProtos.length] = dataRecordResponseConstructContractProto;
-            return () -> (Any<ResponseConstructContractProto>) () -> t;
+            return new VertexResponseStreamDataRecord() {
+                @Override
+                public Any<ResponseConstructContractProto> responseContracts() {
+                    return () -> t;
+                }
+
+                @Override
+                public WireTypeResponseConstructContractProto wire() {
+                    return () -> new StreamingWireProto.PermittingResponseStream<>(response);
+                }
+            };
         }
 
         @Override
@@ -151,6 +165,11 @@ public class VertexResponseStreamAiClient implements
         @Override
         public Any<ResponseConstructContractProto> responseContracts() {
             return response.responseContracts();
+        }
+
+        @Override
+        public ExecContractProto exec() {
+            return () -> () -> new ExecContractProto.ExecutionDescriptor[0];
         }
 
     }

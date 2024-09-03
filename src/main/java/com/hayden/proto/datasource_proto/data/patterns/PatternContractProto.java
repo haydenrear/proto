@@ -1,8 +1,9 @@
 package com.hayden.proto.datasource_proto.data.patterns;
 
 import com.hayden.proto.permitting.Permitting;
+import com.hayden.proto.proto.Prototype;
 
-public sealed interface PatternContractProto
+public sealed interface PatternContractProto extends Prototype
         permits
             PatternContractProto.PermittingRegexContractProto,
             PatternContractProto.PermittingAntContractProto,

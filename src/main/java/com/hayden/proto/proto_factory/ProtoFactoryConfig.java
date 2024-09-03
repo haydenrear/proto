@@ -3,7 +3,10 @@ package com.hayden.proto.proto_factory;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.yaml.snakeyaml.Yaml;
 
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Collection;
 
 /**
@@ -16,14 +19,18 @@ import java.util.Collection;
 @Configuration
 public class ProtoFactoryConfig {
 
-    @SuppressWarnings("rawtypes")
     @Bean
-    BeanFactoryPostProcessor beanFactoryPostProcessor(Collection<ProtoFactory> protoFactory) {
+    public BeanFactoryPostProcessor beanFactoryPostProcessor(Collection<? extends ProtoFactory> protoFactory) {
         return beanFactory -> protoFactory.stream()
                 .peek(beanFactory::autowireBean)
                 .forEach(p -> {
-                    var proto = p.createProto();
-                    beanFactory.registerSingleton(proto.getClass().getSimpleName(), proto);
+                    Yaml y = new Yaml();
+                    try (var fr = new FileReader(p.loadFrom().toFile())) {
+                        var props = y.loadAs(fr, p.propertySourceClazz());
+                        var proto = p.createProto((ProtoSource) props);
+                        beanFactory.registerSingleton(proto.getClass().getSimpleName(), proto);
+                    } catch (IOException e) {
+                    }
                 });
     }
 

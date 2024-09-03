@@ -4,5 +4,5 @@ import com.hayden.proto.datasource_proto.inputs.request.StaticApiRequestContract
 import com.hayden.proto.ty.Prototyped;
 
 public interface StaticApiRequestProto<T>
-        extends Prototyped<StaticApiRequestContractProto, T> {
+        extends Prototyped<StaticApiRequestContractProto> {
 }

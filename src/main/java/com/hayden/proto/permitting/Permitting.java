@@ -1,6 +1,8 @@
 package com.hayden.proto.permitting;
 
-public interface Permitting<T> {
+import com.hayden.proto.proto.Prototype;
+
+public interface Permitting<T extends Prototype> {
 
     T permitting();
 

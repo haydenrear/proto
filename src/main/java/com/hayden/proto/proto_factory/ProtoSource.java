@@ -1,4 +1,9 @@
 package com.hayden.proto.proto_factory;
 
-public interface ProtoSource {
+import com.hayden.proto.proto.Prototype;
+
+public interface ProtoSource<P extends Prototype> {
+
+    P build();
+
 }

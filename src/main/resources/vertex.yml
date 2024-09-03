@@ -1,0 +1,5 @@
+contextLength: 1024
+modelLocation: us-central1-aiplatform.googleapis.com:443
+projectId: beachhouse-booking
+modelName: text-embedding-004
+

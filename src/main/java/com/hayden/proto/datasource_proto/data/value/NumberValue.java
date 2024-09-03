@@ -1,5 +1,5 @@
 package com.hayden.proto.datasource_proto.data.value;
 
-public interface NumberValueContractProto<T extends Number> {
+public interface NumberValue<T extends Number> {
     T value();
 }

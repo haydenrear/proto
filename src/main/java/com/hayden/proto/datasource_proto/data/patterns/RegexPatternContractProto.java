@@ -1,6 +1,8 @@
 package com.hayden.proto.datasource_proto.data.patterns;
 
 
-public interface RegexPatternContractProto {
+import com.hayden.proto.proto.Prototype;
+
+public interface RegexPatternContractProto extends Prototype {
 
 }

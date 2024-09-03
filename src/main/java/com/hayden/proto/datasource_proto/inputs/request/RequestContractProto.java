@@ -1,15 +1,18 @@
 package com.hayden.proto.datasource_proto.inputs.request;
 
-import com.hayden.proto.datasource_proto.cardinality.ManyOf;
 import com.hayden.proto.datasource_proto.cardinality.Plural;
-import com.hayden.proto.datasource_proto.data.wiretype.WireContractProto;
 import com.hayden.proto.proto.CompositePrototype;
 
-public interface RequestContractProto<W extends WireContractProto>
-        extends CompositePrototype {
+public interface RequestContractProto
+        extends CompositePrototype<RequestConstructContractProto> {
 
-    Plural<? extends RequestConstructContractProto> requestItems();
+    default Plural<? extends RequestConstructContractProto> prototypes() {
+        return requestContracts();
+    }
 
-    W wireContract();
+    Plural<? extends RequestConstructContractProto> requestContracts();
+
+    WireTypeRequestContractProto wire();
+
 
 }

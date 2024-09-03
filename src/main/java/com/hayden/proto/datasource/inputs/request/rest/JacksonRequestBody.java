@@ -15,7 +15,7 @@ public record JacksonRequestBody<T>(byte[] wrapped) implements ByteBody {
     @Override
     public BodyContractProto proto() {
         return new BodyContractProto.PermitsSearchContractProto(
-                new SearchContractProto.PermittingValueContractProto(
+                new SearchContractProto.PermittingValue(
                         new ValueContractProto.PermittingAdt(new JacksonSerializableRequestBody())));
     }
 

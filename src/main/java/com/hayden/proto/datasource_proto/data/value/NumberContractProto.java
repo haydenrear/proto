@@ -1,4 +1,6 @@
 package com.hayden.proto.datasource_proto.data.value;
 
-public interface NumberContractProto {
+import com.hayden.proto.proto.Prototype;
+
+public interface NumberContractProto extends Prototype {
 }

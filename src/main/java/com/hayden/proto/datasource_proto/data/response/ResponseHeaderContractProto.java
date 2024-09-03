@@ -2,14 +2,15 @@ package com.hayden.proto.datasource_proto.data.response;
 
 import com.hayden.proto.datasource_proto.data.KeyContractProto;
 import com.hayden.proto.datasource_proto.data.KeyValueContractProto;
+import com.hayden.proto.datasource_proto.data.MultiValueKeyValueContractProto;
 import com.hayden.proto.datasource_proto.data.ValueContractProto;
 import com.hayden.proto.datasource_proto.data.value.DiscreteContractProto;
 
-import java.util.List;
-
-public non-sealed interface ResponseHeaderContractProto<KV extends KeyValueContractProto<KeyContractProto.PermittingDiscrete, ValueContractProto.PermittingDiscrete>> extends
+public non-sealed interface ResponseHeaderContractProto
+                <KV extends KeyValueContractProto<KeyContractProto.PermittingDiscrete, MV>, MV extends ValueContractProto, K extends KeyContractProto>
+        extends
                 ResponseConstructContractProto,
-                KeyValueContractProto<KeyContractProto.PermittingString, ValueContractProto.PermittingKeyValue<KV, KeyContractProto.PermittingDiscrete, ValueContractProto.PermittingDiscrete>> {
+                MultiValueKeyValueContractProto<KV, MV, KeyContractProto.PermittingDiscrete, K> {
 
     interface DateHeaderContractProto extends ResponseHeaderContractProto {}
 
@@ -92,13 +93,15 @@ public non-sealed interface ResponseHeaderContractProto<KV extends KeyValueContr
 
         }
 
-        record CookieResponseKeys(CookieResponseAttributeItem[] ofMany) implements DiscreteContractProto<CookieResponseAttributeItem> {
+        record CookieResponseKeys(CookieResponseAttributeItem[] ofMany)
+                implements DiscreteContractProto<CookieResponseAttributeItem> {
             public CookieResponseKeys() {
                 this(new CookieResponseAttributeItem[]{});
             }
         }
 
-        record CookieResponseValues(CookieResponseAttributeItem[] ofMany) implements DiscreteContractProto<CookieResponseAttributeItem> {
+        record CookieResponseValues(CookieResponseAttributeItem[] ofMany)
+                implements DiscreteContractProto<CookieResponseAttributeItem> {
             public CookieResponseValues() {
                 this(new CookieResponseAttributeItem[]{});
             }
@@ -106,6 +109,7 @@ public non-sealed interface ResponseHeaderContractProto<KV extends KeyValueContr
 
     }
 
-    interface SessionResponseHeaderContractProto extends ResponseHeaderContractProto<CookieResponseAttributes> {
+    interface SessionResponseHeaderContractProto
+            extends ResponseHeaderContractProto<CookieResponseAttributes, ValueContractProto.PermittingDiscrete, KeyContractProto.PermittingDiscrete> {
     }
 }

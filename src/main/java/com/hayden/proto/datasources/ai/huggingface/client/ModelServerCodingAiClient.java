@@ -1,7 +1,5 @@
 package com.hayden.proto.datasources.ai.huggingface.client;
 
-import com.hayden.proto.datasource_proto.cardinality.Any;
-import com.hayden.proto.datasource_proto.inputs.request.ai_request.AiRequestConstructProto;
 import com.hayden.proto.datasources.ai.huggingface.request.ModelServerRequest;
 import com.hayden.proto.proto.Prototype;
 import com.hayden.utilitymodule.result.Result;
@@ -36,7 +34,7 @@ public class ModelServerCodingAiClient implements
 
     public record CodeResult(String data) {}
 
-    public record ModelServerCodeResponse(ModelServerCodingAiClient self, CodeResult embedding)
+    public record ModelServerCodeResponse(ModelServerCodingAiClient self, CodeResult codeResult)
             implements DataRecordResponseRecord {
 
         @Override

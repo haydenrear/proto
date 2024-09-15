@@ -18,9 +18,7 @@ public class DelegatingRuleEmission implements RuleEmission {
 
     @Override
     public Map<JakartaValidationTarget, JakartaValidationRule> emitRules(Class<? extends CompositePrototypedBehavior<Prototype>> from) {
-        var clazz = from.getClass();
-
-        for (var a : clazz.getAnnotations()) {
+        for (var a : from.getAnnotations()) {
             switch(a) {
                 case Nullable n -> {
 
@@ -31,11 +29,6 @@ public class DelegatingRuleEmission implements RuleEmission {
                 default -> {}
             }
         }
-
-//        Arrays.stream(from.getDeclaredFields())
-//                .map(f -> {
-//
-//                });
 
         return new HashMap<>();
     }

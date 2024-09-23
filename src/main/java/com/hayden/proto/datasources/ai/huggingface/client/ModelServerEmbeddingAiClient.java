@@ -48,10 +48,11 @@ public class ModelServerEmbeddingAiClient implements
     @Override
     public Result<ModelServerEmbeddingResponse, DataSourceClientPrototypeError> send(ModelServerRequest request) {
         // TODO: pull this validation into a cross-cutting concern
-        return request.proto().is(request)
-                .mapError(pErr -> new DataSourceClientPrototypeError(pErr.getMessage()))
-                .filterRes(pErr -> pErr.map(Boolean::booleanValue).orElse(false))
-                .flatMapResult(b -> Result.ok(
+//        return request.proto().is(request)
+//                .mapError(pErr -> new DataSourceClientPrototypeError(pErr.getMessage()))
+//                .filterRes(pErr -> pErr.map(Boolean::booleanValue).orElse(false))
+//                .flatMapResult(b ->
+                        return Result.ok(
                         new ModelServerEmbeddingResponse(
                                 this,
                                 template.post()
@@ -60,7 +61,8 @@ public class ModelServerEmbeddingAiClient implements
                                         .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                                         .retrieve()
                                         .body(EmbeddingResult.class)
-                        )));
+                        ));
+//                        ));
     }
 
     @Override

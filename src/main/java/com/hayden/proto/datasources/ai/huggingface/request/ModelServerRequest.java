@@ -3,6 +3,7 @@ package com.hayden.proto.datasources.ai.huggingface.request;
 import com.hayden.proto.datasource.inputs.request.Body;
 import com.hayden.proto.datasource.inputs.request.api.ApiRequest;
 import com.hayden.proto.datasource_proto.cardinality.Any;
+import com.hayden.proto.datasource_proto.cardinality.Many;
 import com.hayden.proto.datasource_proto.cardinality.Plural;
 import com.hayden.proto.datasource_proto.data.wiretype.StaticWireProto;
 import com.hayden.proto.datasource_proto.inputs.request.StaticApiRequestContractProto;
@@ -13,10 +14,12 @@ import com.hayden.proto.ty.Prototyped;
 import com.hayden.shared.config.PrototypeScope;
 import jakarta.validation.executable.ValidateOnExecution;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -26,6 +29,7 @@ public class ModelServerRequest implements ApiRequest {
 
     ModelServerBody content;
 
+    @Autowired
     ModelServerApiRequestContractProto requestConstructProtoAny;
 
     public ModelServerRequest(ModelServerBody content) {

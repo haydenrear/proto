@@ -4,6 +4,7 @@ import com.hayden.proto.datasources.ai.huggingface.request.ModelServerRequest;
 import com.hayden.proto.proto.Prototype;
 import com.hayden.utilitymodule.result.Result;
 import jakarta.annotation.PostConstruct;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -34,6 +35,7 @@ public class ModelServerCodingAiClient implements
 
     public record CodeResult(String data) {}
 
+    @Builder
     public record ModelServerCodeResponse(ModelServerCodingAiClient self, CodeResult codeResult)
             implements DataRecordResponseRecord {
 

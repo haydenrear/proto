@@ -7,6 +7,7 @@ import com.hayden.proto.datasources.ai.huggingface.request.ModelServerRequest;
 import com.hayden.proto.proto.Prototype;
 import com.hayden.utilitymodule.result.Result;
 import jakarta.annotation.PostConstruct;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -33,8 +34,9 @@ public class ModelServerEmbeddingAiClient implements
                 .build();
     }
 
-    public record EmbeddingResult(float[][][] data) {}
+    public record EmbeddingResult(float[] data) {}
 
+    @Builder
     public record ModelServerEmbeddingResponse(ModelServerEmbeddingAiClient self, EmbeddingResult embedding)
             implements DataRecordResponseRecord {
 

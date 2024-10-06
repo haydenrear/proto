@@ -8,5 +8,6 @@ import com.hayden.proto.ty.Prototyped;
  */
 public interface AnnotationDrivenProtoSourceFactory<P extends Prototyped<PR>, PR extends Prototype>
         extends ProtoSourceFactory<PR, Class<? extends P>> {
-
+    default void f() {
+    }
 }

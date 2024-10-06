@@ -1,6 +1,10 @@
+import dev.clojurephant.plugin.clojure.tasks.ClojureCheck
+import dev.clojurephant.plugin.clojure.tasks.ClojureCompile
+
 plugins {
     id("com.hayden.no-main-class")
     id("com.hayden.ai")
+    id("com.hayden.clojure")
 }
 
 group = "com.hayden"
@@ -15,4 +19,8 @@ tasks.register("prepareKotlinBuildScriptModel") {}
 dependencies {
     api(project(":shared"))
     api(project(":utilitymodule"))
+}
+
+tasks.named("compileClojure", ClojureCompile::class.java) {
+    namespaces.add("com.hayden.proto.prototypes")
 }

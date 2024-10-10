@@ -1,5 +1,6 @@
 package com.hayden.proto.proto_factory;
 
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +18,7 @@ import java.util.Collection;
  * Then maybe even the field is removed and is not included in the model itself, but instead modeled independently.
  */
 @Configuration
+@NoArgsConstructor
 public class ProtoFactoryConfig {
 
     @Bean

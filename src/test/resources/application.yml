@@ -1,0 +1,4 @@
+model-server:
+  model-location: http://localhost:9991/code_llama
+  context-length: 1024
+

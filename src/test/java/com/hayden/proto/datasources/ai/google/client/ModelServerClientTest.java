@@ -1,8 +1,7 @@
 package com.hayden.proto.datasources.ai.google.client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hayden.proto.datasources.ai.huggingface.client.ModelServerEmbeddingAiClient;
-import com.hayden.proto.datasources.ai.huggingface.request.ModelServerRequest;
+import com.hayden.proto.prototyped.datasources.ai.modelserver.client.ModelServerEmbeddingAiClient;
+import com.hayden.proto.prototyped.datasources.ai.modelserver.request.ModelServerRequest;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,9 +22,9 @@ public class ModelServerClientTest {
 
     @SpringBootApplication
     @ComponentScan("com.hayden.proto")
-    public static class VertexApp {
+    public static class ProtoApp {
         public static void main(String[] args) {
-            SpringApplication.run(VertexApp.class, args);
+            SpringApplication.run(ProtoApp.class, args);
         }
 
     }

@@ -6,6 +6,6 @@ import com.hayden.proto.prototype.Prototype;
 
 public interface DataRecordContractProto extends Prototype {
 
-    Many<DataValueContractProto> values();
+    Many<? extends DataValueContractProto> values();
 
 }

@@ -9,6 +9,6 @@ public interface CompositePrototypedBehavior<P extends Prototype> extends Protot
      * These are the contracts that P satisfies, as if P is the delegate
      * @return
      */
-    Plural<? extends Prototype> contracts();
+    Plural<? extends P> contracts();
 
 }

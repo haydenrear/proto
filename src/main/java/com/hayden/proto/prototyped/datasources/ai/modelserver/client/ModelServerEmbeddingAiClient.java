@@ -25,7 +25,7 @@ public class ModelServerEmbeddingAiClient {
 
     private RestClient template = RestClient.builder().build();
 
-    @Body(prototype = EmbeddingAiClientResponseBody.class)
+    @Body(proto = EmbeddingAiClientResponseBody.class)
     public record EmbeddingResult(float[] data) {}
 
     public record EmbeddingAiClientResponseBody() implements BodyContractProto {}

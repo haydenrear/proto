@@ -1,8 +1,12 @@
 package com.hayden.proto.prototyped.datasources.ai.modelserver.client;
 
 import com.hayden.proto.prototype.cardinality.Any;
+import com.hayden.proto.prototype.cardinality.Plural;
 import com.hayden.proto.prototype.datasource.client.DataSourceClientContractProto;
+import com.hayden.proto.prototype.datasource.data.inputs.request.RequestConstructContractProto;
+import com.hayden.proto.prototype.datasource.data.inputs.request.RequestContractProto;
 import com.hayden.proto.prototype.datasource.data.response.ResponseConstructContractProto;
+import com.hayden.proto.prototype.datasource.data.response.ResponseContractProto;
 import com.hayden.proto.prototype.datasource.exec.ExecContractProto;
 import com.hayden.proto.prototype.datasource.data.inputs.request.ai_request.AiRequestConstructProto;
 import com.hayden.proto.prototype.factory.ModelServerPropertySource;
@@ -14,13 +18,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.context.ApplicationContext;
 
+import java.lang.annotation.Inherited;
 import java.util.Objects;
 
 @NoArgsConstructor
 public class ModelServerContractProto implements DataSourceClientContractProto {
 
+
     private ModelServerRequestContract requestConstructs;
+
     private ModelServerResponseContract response;
+
     @Getter
     @Setter
     private ProgramDescriptorTarget target;
@@ -35,13 +43,13 @@ public class ModelServerContractProto implements DataSourceClientContractProto {
     }
 
     @Override
-    public Any<AiRequestConstructProto> requestContracts() {
-        return this.requestConstructs.requestContracts();
+    public RequestContractProto requestContracts() {
+        return () -> requestConstructs.requestContracts();
     }
 
     @Override
-    public Any<ResponseConstructContractProto> responseContracts() {
-        return response.responseContracts();
+    public ResponseContractProto responseContracts() {
+        return () -> response.responseContracts();
     }
 
     @Override

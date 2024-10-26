@@ -1,6 +1,9 @@
 package com.hayden.proto.prototype.datasource.data.db.model;
 
-import com.hayden.proto.prototype.Prototype;
+import com.hayden.proto.prototype.CompositePrototype;
+import com.hayden.proto.prototype.datasource.DataRecordContractProto;
+import com.hayden.proto.prototyped.CompositePrototyped;
 
-public interface EntityContractProto extends Prototype {
+public interface EntityContractProto extends CompositePrototype<DataRecordContractProto> {
+
 }

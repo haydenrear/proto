@@ -3,6 +3,8 @@ package com.hayden.proto.prototype.datasource;
 import com.hayden.proto.prototype.cardinality.Plural;
 import com.hayden.proto.prototype.datasource.client.DataSourceClientContractProto;
 import com.hayden.proto.prototype.Prototype;
+import com.hayden.proto.prototype.datasource.data.db.RepoContractProto;
+import com.hayden.proto.prototype.datasource.data.db.consistency.ConsistencyContractProto;
 
 /**
  * Situation:
@@ -15,6 +17,8 @@ import com.hayden.proto.prototype.Prototype;
  */
 public interface DataSourceContractProto extends Prototype {
 
-    Plural<DataSourceClientContractProto> clientProto();
+    Plural<? extends RepoContractProto> repoContractProto();
+
+    ConsistencyContractProto consistencyContractProto();
 
 }

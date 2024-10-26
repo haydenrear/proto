@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 @RequestSourceDesc(proto = ModelServerRequest.ModelServerApiRequestContractProto.class)
 public class ModelServerRequest {
 
-    @Body(prototype = ModelServerRecordProto.class)
+    @Body(proto = ModelServerRecordProto.class)
     public record ModelServerBody(String prompt) {}
 
     ModelServerBody content;

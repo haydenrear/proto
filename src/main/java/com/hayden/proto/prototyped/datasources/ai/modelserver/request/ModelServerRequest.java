@@ -14,7 +14,7 @@ import com.hayden.proto.prototype.datasource.data.inputs.request.StaticApiReques
 import com.hayden.proto.prototype.datasource.data.inputs.request.WireTypeRequestContractProto;
 import com.hayden.proto.prototype.datasource.data.inputs.request.ai_request.AiRequestConstructProto;
 import com.hayden.proto.prototyped.datasources.ai.modelserver.data.ModelServerRecordProto;
-import com.hayden.shared.config.PrototypeScope;
+import com.hayden.utilitymodule.ctx.PrototypeScope;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;

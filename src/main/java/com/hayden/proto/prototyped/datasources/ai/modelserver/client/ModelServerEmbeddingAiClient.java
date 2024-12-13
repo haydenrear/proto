@@ -10,6 +10,7 @@ import com.hayden.proto.prototyped.datasources.ai.modelserver.request.ModelServe
 import com.hayden.utilitymodule.result.Result;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
@@ -22,30 +23,31 @@ import org.springframework.web.client.RestClient;
 @DataClient(proto = EmbeddingModelServerContractProto.class)
 public class ModelServerEmbeddingAiClient {
 
-
-    private RestClient template = RestClient.builder().build();
+    @Builder
+    public record EmbeddingAiClientResponseBody() implements BodyContractProto {}
 
     @Body(proto = EmbeddingAiClientResponseBody.class)
+    @Builder
     public record EmbeddingResult(float[] data) {}
-
-    public record EmbeddingAiClientResponseBody() implements BodyContractProto {}
 
     @Builder
     @Response(proto = ModelServerResponseContract.class)
     public record ModelServerEmbeddingResponse(EmbeddingResult embedding) {}
 
+    @Autowired(required = false)
+    private RestClient modelServerRestClient = RestClient.builder().build();
+
     @RequestResponse(requestSource = ModelServerRequest.class, responseSource = ModelServerEmbeddingResponse.class)
     public Result<ModelServerEmbeddingResponse, DataSourceClient.DataSourceClientPrototypeError> send(ModelServerRequest request) {
         return Result.ok(
                 new ModelServerEmbeddingResponse(
-                        template.post()
+                        modelServerRestClient.post()
                                 .uri(request.getUrl(), request.getPath())
                                 .body(request.getContent())
                                 .headers(h -> h.putAll(request.getHeaders()))
                                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                                 .retrieve()
-                                .body(EmbeddingResult.class)
-                ));
+                                .body(EmbeddingResult.class)));
     }
 
 }

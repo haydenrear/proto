@@ -9,6 +9,7 @@ import com.hayden.utilitymodule.result.Result;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
@@ -21,21 +22,22 @@ import org.springframework.web.client.RestClient;
 @DataClient(proto = CodingModelServerContractProto.class)
 public class ModelServerCodingAiClient {
 
-    private RestClient template = RestClient.builder().build();
-
-
+    @Builder
     public record CodeResult(String data) {}
 
     @Builder
     @Response(proto = ModelServerResponseContract.class)
     public record ModelServerCodeResponse(CodeResult codeResult) { }
 
+    @Autowired(required = false)
+    private RestClient modelServerRestClient = RestClient.builder().build();
+
     @SneakyThrows
     @RequestResponse(requestSource = ModelServerRequest.class, responseSource = ModelServerCodeResponse.class)
     public Result<ModelServerCodeResponse, DataSourceClient.DataSourceClientPrototypeError> send(ModelServerRequest request) {
         return Result.ok(
                 new ModelServerCodeResponse(
-                        template.post()
+                        modelServerRestClient.post()
                                 .uri(request.getUrl(), request.getPath())
                                 .body(request.getContent())
                                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)

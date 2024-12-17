@@ -34,6 +34,7 @@ public class ModelServerClientTest {
     void send() {
         System.out.println(client);
         var floated = client.send(new ModelServerRequest(new ModelServerRequest.ModelServerBody("hello!")))
+                .one()
                 .get().embedding().data();
         System.out.println(floated);
     }

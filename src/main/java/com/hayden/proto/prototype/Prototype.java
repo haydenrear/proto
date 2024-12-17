@@ -1,12 +1,12 @@
 package com.hayden.proto.prototype;
 
 import com.hayden.proto.prototype.factory.persistdescript.ProgramDescriptorTarget;
-import com.hayden.utilitymodule.result.error.ErrorCollect;
+import com.hayden.utilitymodule.result.error.SingleError;
 import org.springframework.context.ApplicationContext;
 
 public interface Prototype {
 
-    interface PrototypeError extends ErrorCollect {}
+    interface PrototypeError extends SingleError {}
 
     default void wirePrototype(ApplicationContext ctx) {}
 

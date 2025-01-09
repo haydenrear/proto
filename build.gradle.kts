@@ -15,7 +15,7 @@ group = "com.hayden"
 version = "0.0.1-SNAPSHOT"
 
 java {
-    version = JavaVersion.VERSION_21
+    version = JavaVersion.VERSION_23
 }
 
 tasks.register("prepareKotlinBuildScriptModel") {}

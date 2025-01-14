@@ -17,7 +17,7 @@ class ModelContextProtocolClientAdapter {
             clientImplementations.getOrPut(impl) { Client(impl) }
                 .callTool(callToolRequest)
                 ?.content
-        };
+        }
     }
 
 }

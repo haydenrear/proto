@@ -37,15 +37,6 @@ public class ModelContextProtocolRequest {
 
     ContextRequestBatch content;
 
-    @Headers(proto = ModelServerAiRequestHeaders.class)
-    HttpHeaders headers;
-    @Url
-    String url;
-    @Path
-    String path;
-    @Retry(proto = RetryProto.class)
-    RetryParameters retryParameters;
-
     public ModelContextProtocolRequest(ContextRequestBatch content) {
         this.content = content;
     }

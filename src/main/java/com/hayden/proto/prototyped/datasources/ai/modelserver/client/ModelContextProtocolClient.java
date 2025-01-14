@@ -30,13 +30,13 @@ public class ModelContextProtocolClient {
 
     @RequestResponse(requestSource = ModelContextProtocolRequest.class, responseSource = ModelServerResponse.class)
     public Result<ModelServerResponse, DataSourceClient.DataSourceClientPrototypeError> send(ModelContextProtocolRequest request) {
-        Result<ContextResponse, DataSourceClient.DataSourceClientPrototypeError> res = Result.<ContextResponse, DataSourceClient.DataSourceClientPrototypeError>from(
+        Result<ContextResponse, DataSourceClient.DataSourceClientPrototypeError> res = Result.from(
                 request.getContent().prompt()
                         .parallelStream()
                         .filter(Objects::nonNull)
                         .map(cr -> cr.toImplementation()
                                 .flatMap(i -> cr.toCallToolRequest()
-                                        .map(cte -> Result.ok(new ContextResponse.MpcPromptMessageContent(adapter.doCallClient(i, cte)))))
+                                        .map(cte -> Result.<ContextResponse, DataSourceClient.DataSourceClientPrototypeError>ok(new ContextResponse.MpcPromptMessageContent(adapter.doCallClient(i, cte)))))
                                 .orElseGet(() -> Result.err(new DataSourceClient.DataSourceClientPrototypeError("Could not convert %s to MPC request.".formatted(cr))))));
 
         var collected = res.toList();

@@ -8,7 +8,10 @@ import com.hayden.utilitymodule.result.Result;
 import com.hayden.utilitymodule.result.agg.AggregateError;
 import com.hayden.utilitymodule.result.error.SingleError;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public interface DataSourceClient<REQ, RES> extends CompositePrototypedBehavior<DataSourceClientContractProto> {
 
@@ -16,7 +19,11 @@ public interface DataSourceClient<REQ, RES> extends CompositePrototypedBehavior<
 
     interface DataRecordRequestContract extends RequestContractProto {}
 
-    record DataSourceClientPrototypeError(Set<SingleError> errors)  implements AggregateError.StdAggregateError { }
+    record DataSourceClientPrototypeError(Set<SingleError> errors)  implements AggregateError.StdAggregateError {
+        public DataSourceClientPrototypeError(String errors) {
+            this(Arrays.stream(errors.split(",")).map(SingleError::fromMessage).collect(Collectors.toSet()));
+        }
+    }
 
     Result<RES, DataSourceClientPrototypeError> send(REQ request);
 

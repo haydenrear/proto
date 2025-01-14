@@ -1,39 +1,41 @@
 package com.hayden.proto.prototyped.datasources.ai.modelserver.request;
 
+import com.hayden.proto.prototype.cardinality.Any;
+import com.hayden.proto.prototype.cardinality.Plural;
+import com.hayden.proto.prototype.datasource.data.KeyContractProto;
+import com.hayden.proto.prototype.datasource.data.ValueContractProto;
 import com.hayden.proto.prototype.datasource.data.inputs.request.RetryProto;
+import com.hayden.proto.prototype.datasource.data.inputs.request.StaticApiRequestContractProto;
+import com.hayden.proto.prototype.datasource.data.inputs.request.WireTypeRequestContractProto;
+import com.hayden.proto.prototype.datasource.data.inputs.request.ai_request.AiRequestConstructProto;
+import com.hayden.proto.prototype.datasource.data.wire.StaticWireProto;
+import com.hayden.proto.prototyped.datasources.ai.modelserver.data.ModelServerRecordProto;
+import com.hayden.proto.prototyped.datasources.ai.modelserver.response.ContextResponse;
 import com.hayden.proto.prototyped.sources.client.RequestSourceDesc;
 import com.hayden.proto.prototyped.sources.data.inputs.Url;
 import com.hayden.proto.prototyped.sources.data.inputs.request.Body;
 import com.hayden.proto.prototyped.sources.data.inputs.request.Path;
 import com.hayden.proto.prototyped.sources.requestresponse.Headers;
-import com.hayden.proto.prototype.cardinality.Any;
-import com.hayden.proto.prototype.cardinality.Plural;
-import com.hayden.proto.prototype.datasource.data.KeyContractProto;
-import com.hayden.proto.prototype.datasource.data.ValueContractProto;
-import com.hayden.proto.prototype.datasource.data.wire.StaticWireProto;
-import com.hayden.proto.prototype.datasource.data.inputs.request.StaticApiRequestContractProto;
-import com.hayden.proto.prototype.datasource.data.inputs.request.WireTypeRequestContractProto;
-import com.hayden.proto.prototype.datasource.data.inputs.request.ai_request.AiRequestConstructProto;
-import com.hayden.proto.prototyped.datasources.ai.modelserver.data.ModelServerRecordProto;
 import com.hayden.proto.prototyped.sources.retry.Retry;
 import com.hayden.utilitymodule.ctx.PrototypeScope;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Getter
 @Slf4j
 @Component
 @PrototypeScope
-@RequestSourceDesc(proto = ModelServerRequest.ModelServerApiRequestContractProto.class)
-public class ModelServerRequest {
+@RequestSourceDesc(proto = ModelContextProtocolRequest.ModelServerApiRequestContractProto.class)
+public class ModelContextProtocolRequest {
 
     @Body(proto = ModelServerRecordProto.class)
-    public record ModelServerBody(String prompt) {}
+    public record ContextRequestBatch(List<ContextRequest> prompt) {}
 
-    ModelServerBody content;
+    ContextRequestBatch content;
 
     @Headers(proto = ModelServerAiRequestHeaders.class)
     HttpHeaders headers;
@@ -44,7 +46,7 @@ public class ModelServerRequest {
     @Retry(proto = RetryProto.class)
     RetryParameters retryParameters;
 
-    public ModelServerRequest(ModelServerBody content) {
+    public ModelContextProtocolRequest(ContextRequestBatch content) {
         this.content = content;
     }
 

@@ -7,7 +7,7 @@ import com.hayden.proto.prototype.Permitting;
 import com.hayden.proto.prototype.Prototype;
 
 /**
- * Of the most important data - the map key
+ * Of the most important embedding - the map key
  */
 public sealed interface KeyContractProto extends Prototype
         permits

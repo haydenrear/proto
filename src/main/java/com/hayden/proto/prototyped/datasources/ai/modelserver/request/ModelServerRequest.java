@@ -19,6 +19,7 @@ import com.hayden.proto.prototyped.sources.retry.Retry;
 import com.hayden.utilitymodule.ctx.PrototypeScope;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
@@ -28,10 +29,23 @@ import org.springframework.stereotype.Component;
 @Component
 @PrototypeScope
 @RequestSourceDesc(proto = ModelServerRequest.ModelServerApiRequestContractProto.class)
+@Setter
 public class ModelServerRequest {
 
     @Body(proto = ModelServerRecordProto.class)
-    public record ModelServerBody(String prompt) {}
+    public record ModelServerBody(String prompt, ModelServerRequestType requestType) {
+        public ModelServerBody(String prompt) {
+            this(prompt, null);
+        }
+
+        public ModelServerBody withRequestType(ModelServerRequestType requestType) {
+            return new ModelServerBody(this.prompt, requestType);
+        }
+    }
+
+    public enum ModelServerRequestType {
+        EMBEDDING, TOOLSET, CODEGEN, INITIAL_CODE
+    }
 
     ModelServerBody content;
 
@@ -43,6 +57,7 @@ public class ModelServerRequest {
     String path;
     @Retry(proto = RetryProto.class)
     RetryParameters retryParameters;
+
 
     public ModelServerRequest(ModelServerBody content) {
         this.content = content;

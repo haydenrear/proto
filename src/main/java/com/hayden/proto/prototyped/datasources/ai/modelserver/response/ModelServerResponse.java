@@ -3,7 +3,7 @@ package com.hayden.proto.prototyped.datasources.ai.modelserver.response;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.hayden.proto.prototyped.datasources.ai.modelserver.client.ModelServerCodingAiClient;
 import com.hayden.proto.prototyped.datasources.ai.modelserver.client.ModelServerResponseContract;
-import com.hayden.proto.prototyped.datasources.ai.modelserver.request.ContextRequest;
+import com.hayden.proto.prototyped.datasources.ai.modelserver.request.ModelContextProtocolContextRequest;
 import com.hayden.proto.prototyped.sources.client.Response;
 import lombok.Builder;
 
@@ -13,9 +13,9 @@ import java.util.List;
 @Response(proto = ModelServerResponseContract.class)
 public sealed interface ModelServerResponse
         permits
-        ModelServerResponse.AddContextResponse,
-        ModelServerResponse.ModelServerCodeResponse,
-        ModelServerResponse.RetrievedContextResponse {
+            ModelServerResponse.AddContextResponse,
+            ModelServerResponse.ModelServerCodeResponse,
+            ModelServerResponse.RetrievedContextResponse {
 
 
     @Builder
@@ -23,7 +23,7 @@ public sealed interface ModelServerResponse
     }
 
     @Builder
-    record AddContextResponse(List<ContextRequest> contextRequests) implements ModelServerResponse {
+    record AddContextResponse(List<ModelContextProtocolContextRequest> modelContextProtocolContextRequests) implements ModelServerResponse {
     }
 
     @Builder

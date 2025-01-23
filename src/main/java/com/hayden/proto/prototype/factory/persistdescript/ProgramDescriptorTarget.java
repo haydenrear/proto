@@ -10,7 +10,7 @@ import com.hayden.proto.prototyped.sources.client.DataClient;
  *  programs about programs, that use the programs, validate the programs, etc.
  *
  *  So then this will be the main primitive returned in the GraphQL as frontend-gen
- *  data, and also building out graphs about the programs for validation data.
+ *  embedding, and also building out graphs about the programs for validation embedding.
  */
 public sealed interface ProgramDescriptorTarget {
 

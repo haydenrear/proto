@@ -28,7 +28,7 @@ public class ModelServerEmbeddingAiClient {
 
     @Body(proto = EmbeddingAiClientResponseBody.class)
     @Builder
-    public record EmbeddingResult(float[] data) {}
+    public record EmbeddingResult(float[] embedding) {}
 
     @Builder
     @Response(proto = ModelServerResponseContract.class)

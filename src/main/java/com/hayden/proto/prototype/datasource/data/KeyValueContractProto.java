@@ -13,6 +13,19 @@ public interface KeyValueContractProto<K extends KeyContractProto, V extends Val
 
     V value();
 
-    interface KeyValueContract extends KeyValueContractProto<KeyContractProto, ValueContractProto> {}
+    interface KeyValueContract extends KeyValueContractProto<KeyContractProto, ValueContractProto> {
+
+        static KeyValueContract permittingAny() {
+            return new KeyValueContract() {};
+        }
+
+        default KeyContractProto key() {
+            return new KeyContractProto.PermittingAnyKey();
+        }
+
+        default ValueContractProto value() {
+            return new ValueContractProto.PermittingAnyValue();
+        }
+    }
 
 }

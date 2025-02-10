@@ -1,5 +1,6 @@
 package com.hayden.proto.prototyped.datasources.ai.modelserver.request;
 
+import com.google.common.collect.Lists;
 import com.hayden.proto.prototype.datasource.data.inputs.request.RetryProto;
 import com.hayden.proto.prototyped.sources.client.RequestSourceDesc;
 import com.hayden.proto.prototyped.sources.data.inputs.Url;
@@ -17,34 +18,49 @@ import com.hayden.proto.prototype.datasource.data.inputs.request.ai_request.AiRe
 import com.hayden.proto.prototyped.datasources.ai.modelserver.data.ModelServerRecordProto;
 import com.hayden.proto.prototyped.sources.retry.Retry;
 import com.hayden.utilitymodule.ctx.PrototypeScope;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Getter
 @Slf4j
 @Component
 @PrototypeScope
-@RequestSourceDesc(proto = ModelServerRequest.ModelServerApiRequestContractProto.class)
+@RequestSourceDesc(proto = ModelServerChatRequest.ModelServerApiRequestContractProto.class)
 @Setter
-public class ModelServerRequest {
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class ModelServerChatRequest implements WithRetryParams {
+
+    public record ChatMessage(String role, String content) {
+        public ChatMessage(String content) {
+            this("system", content);
+        }
+    }
 
     @Body(proto = ModelServerRecordProto.class)
-    public record ModelServerBody(String prompt, ModelServerRequestType requestType) {
+    public record ModelServerBody(List<ChatMessage> messages, ModelServerRequestType requestType) {
+
+        public ModelServerBody(String prompt, ModelServerRequestType requestType) {
+            this(Lists.newArrayList(new ChatMessage(prompt)), requestType);
+        }
+
         public ModelServerBody(String prompt) {
             this(prompt, null);
         }
 
         public ModelServerBody withRequestType(ModelServerRequestType requestType) {
-            return new ModelServerBody(this.prompt, requestType);
+            return new ModelServerBody(this.messages, requestType);
         }
     }
 
     public enum ModelServerRequestType {
-        EMBEDDING, TOOLSET, CODEGEN, INITIAL_CODE
+        TOOLSET, CODEGEN, INITIAL_CODE, VALIDATION
     }
 
     ModelServerBody content;
@@ -56,29 +72,16 @@ public class ModelServerRequest {
     @Path
     String path;
     @Retry(proto = RetryProto.class)
+    @Getter
     RetryParameters retryParameters;
 
 
-    public ModelServerRequest(ModelServerBody content) {
+    public ModelServerChatRequest(ModelServerBody content) {
         this.content = content;
     }
 
-    public record RetryParameters(int numRetries) {}
-
     public record ModelServerAiRequestHeaders()
-            implements AiRequestConstructProto.AiRestContract.AiRequestHeader {
-
-        @Override
-        public KeyContractProto key() {
-            return null;
-        }
-
-
-        @Override
-        public ValueContractProto.PermittingKeyValueContract permittingKeyValueContract() {
-            return null;
-        }
-    }
+            implements AiRequestConstructProto.AiRestContract.AiRequestHeader {}
 
     public record ModelServerApiRequestContractProto(Plural<AiRequestConstructProto> requestConstructProto)
             implements StaticApiRequestContractProto {

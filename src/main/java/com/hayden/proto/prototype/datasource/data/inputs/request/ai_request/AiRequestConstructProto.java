@@ -1,5 +1,7 @@
 package com.hayden.proto.prototype.datasource.data.inputs.request.ai_request;
 
+import com.hayden.proto.prototype.datasource.data.KeyContractProto;
+import com.hayden.proto.prototype.datasource.data.ValueContractProto;
 import com.hayden.proto.prototype.datasource.data.patterns.UrlPatternContractProto;
 import com.hayden.proto.prototype.value.NumberContractProto;
 import com.hayden.proto.prototype.value.NumberValue;
@@ -30,8 +32,7 @@ public sealed interface AiRequestConstructProto extends RequestConstructContract
                 AiRestContract.AiUrl {
 
         non-sealed interface AiRequestHeader
-                extends AiRestContract, RequestHeaderContractProto.RequestHeaderKeyValueContract {
-        }
+                extends AiRestContract, RequestHeaderContractProto.RequestHeaderKeyValueContract { }
 
         record AiRestPath(PathContractProto permitting)
             implements AiRestContract, Permitting<PathContractProto> {}

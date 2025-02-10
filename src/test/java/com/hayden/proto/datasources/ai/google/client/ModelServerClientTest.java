@@ -1,7 +1,8 @@
 package com.hayden.proto.datasources.ai.google.client;
 
 import com.hayden.proto.prototyped.datasources.ai.modelserver.client.ModelServerEmbeddingAiClient;
-import com.hayden.proto.prototyped.datasources.ai.modelserver.request.ModelServerRequest;
+import com.hayden.proto.prototyped.datasources.ai.modelserver.request.ModelServerChatRequest;
+import com.hayden.proto.prototyped.datasources.ai.modelserver.request.ModelServerEmbeddingRequest;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,7 +34,7 @@ public class ModelServerClientTest {
 //    @Test
     void send() {
         System.out.println(client);
-        var floated = client.send(new ModelServerRequest(new ModelServerRequest.ModelServerBody("hello!").withRequestType(ModelServerRequest.ModelServerRequestType.EMBEDDING)))
+        var floated = client.send(new ModelServerEmbeddingRequest(new ModelServerEmbeddingRequest.ModelServerBody("hello!", "text-embedding-004")))
                 .one()
                 .get().embedding().embedding();
         System.out.println(floated);

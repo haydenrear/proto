@@ -17,7 +17,8 @@ public sealed interface KeyContractProto extends Prototype
             KeyContractProto.PermittingNumber,
             KeyContractProto.PermittingString,
             KeyContractProto.PermittingLiteral,
-            KeyContractProto.PermittingPluralKey {
+            KeyContractProto.PermittingPluralKey,
+            KeyContractProto.PermittingAnyKey {
 
     record PermittingPattern(PatternContractProto permitting)
             implements KeyContractProto, Permitting<PatternContractProto> {}
@@ -40,6 +41,8 @@ public sealed interface KeyContractProto extends Prototype
 
     record PermittingPluralKey<T extends Plural<KeyContractProto>>(T permitting)
             implements KeyContractProto, Permitting<T> {}
+
+    record PermittingAnyKey() implements KeyContractProto {}
 
 
 }

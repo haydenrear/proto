@@ -14,7 +14,14 @@ public interface RequestHeaderContractProto<KV extends KeyValueContractProto<MK,
 
     interface RequestHeaderKeyValueContract
             extends RequestHeaderContractProto<KeyValueContract, ValueContractProto, KeyContractProto, KeyContractProto> {
-        ValueContractProto.PermittingKeyValueContract permittingKeyValueContract();
+
+        default ValueContractProto.PermittingKeyValueContract permittingKeyValueContract() {
+            return new ValueContractProto.PermittingKeyValueContract(KeyValueContract.permittingAny());
+        }
+
+        default KeyContractProto key() {
+            return new KeyContractProto.PermittingAnyKey();
+        }
 
         @Override
         default ValueContractProto.PermittingKeyValue<KeyValueContract, KeyContractProto, ValueContractProto> value() {

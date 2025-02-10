@@ -5,7 +5,7 @@ import com.hayden.proto.prototyped.datasources.ai.modelserver.response.ModelServ
 import com.hayden.proto.prototyped.sources.client.DataClient;
 import com.hayden.proto.prototyped.sources.client.DataSourceClient;
 import com.hayden.proto.prototyped.sources.client.RequestResponse;
-import com.hayden.proto.prototyped.datasources.ai.modelserver.request.ModelServerRequest;
+import com.hayden.proto.prototyped.datasources.ai.modelserver.request.ModelServerChatRequest;
 import com.hayden.utilitymodule.result.Result;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Component
 @DataClient(proto = CodingModelServerContractProto.class)
-public class ModelServerCodingAiClient {
+public class ModelServerCodingAiClient implements RetryableClient<ModelServerChatRequest, ModelServerResponse> {
 
 
     @Builder
@@ -35,9 +35,13 @@ public class ModelServerCodingAiClient {
 
     private final ModelServerResponseDeser responseDeser;
 
+    public Result<ModelServerResponse, DataSourceClient.DataSourceClientPrototypeError> send(ModelServerChatRequest request) {
+        return callWithRetry(request);
+    }
+
     @SneakyThrows
-    @RequestResponse(requestSource = ModelServerRequest.class, responseSource = ModelServerResponse.class)
-    public Result<ModelServerResponse, DataSourceClient.DataSourceClientPrototypeError> send(ModelServerRequest request) {
+    @RequestResponse(requestSource = ModelServerChatRequest.class, responseSource = ModelServerResponse.class)
+    public Result<ModelServerResponse, DataSourceClient.DataSourceClientPrototypeError> doSend(ModelServerChatRequest request) {
         return Optional.ofNullable(request.getRetryParameters())
                 .filter(r -> r.numRetries() > 1)
                 .map(rp -> new RetryTemplateBuilder()
@@ -47,7 +51,7 @@ public class ModelServerCodingAiClient {
                 .orElseGet(() -> perform(request));
     }
 
-    private Result<ModelServerResponse, DataSourceClient.DataSourceClientPrototypeError> perform(ModelServerRequest request) {
+    private Result<ModelServerResponse, DataSourceClient.DataSourceClientPrototypeError> perform(ModelServerChatRequest request) {
         return responseDeser.deserialize(
                 modelServerRestClient.post()
                         .uri(request.getUrl(), request.getPath())

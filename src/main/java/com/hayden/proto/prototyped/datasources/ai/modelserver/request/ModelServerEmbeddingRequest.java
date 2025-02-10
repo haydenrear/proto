@@ -1,5 +1,6 @@
 package com.hayden.proto.prototyped.datasources.ai.modelserver.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.hayden.proto.prototype.cardinality.Any;
 import com.hayden.proto.prototype.cardinality.Plural;
 import com.hayden.proto.prototype.datasource.data.KeyContractProto;
@@ -11,32 +12,49 @@ import com.hayden.proto.prototype.datasource.data.inputs.request.ai_request.AiRe
 import com.hayden.proto.prototype.datasource.data.wire.StaticWireProto;
 import com.hayden.proto.prototyped.datasources.ai.modelserver.data.ModelServerRecordProto;
 import com.hayden.proto.prototyped.sources.client.RequestSourceDesc;
+import com.hayden.proto.prototyped.sources.data.inputs.Url;
 import com.hayden.proto.prototyped.sources.data.inputs.request.Body;
+import com.hayden.proto.prototyped.sources.data.inputs.request.Path;
+import com.hayden.proto.prototyped.sources.requestresponse.Headers;
 import com.hayden.proto.prototyped.sources.retry.Retry;
 import com.hayden.utilitymodule.ctx.PrototypeScope;
-import lombok.Getter;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Getter
 @Slf4j
 @Component
 @PrototypeScope
-@RequestSourceDesc(proto = ModelContextProtocolRequest.ModelServerApiRequestContractProto.class)
-public class ModelContextProtocolRequest implements WithRetryParams {
+@RequestSourceDesc(proto = ModelServerEmbeddingRequest.ModelServerApiRequestContractProto.class)
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ModelServerEmbeddingRequest implements WithRetryParams {
 
     @Body(proto = ModelServerRecordProto.class)
-    public record ContextRequestBatch(List<ModelContextProtocolContextRequest> prompt) {}
+    public record ModelServerBody(@JsonProperty("to_embed") String toEmbed, String model) {
+        public ModelServerBody(String toEmbed) {
+            this(toEmbed, null);
+        }
+    }
 
-    ContextRequestBatch content;
+    ModelServerBody content;
 
+    @Headers(proto = ModelServerAiRequestHeaders.class)
+    HttpHeaders headers;
+    @Url
+    String url;
+    @Path
+    String path;
     @Retry(proto = RetryProto.class)
     @Getter
     RetryParameters retryParameters;
 
-    public ModelContextProtocolRequest(ContextRequestBatch content) {
+
+    public ModelServerEmbeddingRequest(ModelServerBody content) {
         this.content = content;
     }
 

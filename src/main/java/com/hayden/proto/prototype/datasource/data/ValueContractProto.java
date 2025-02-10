@@ -21,6 +21,7 @@ public sealed interface ValueContractProto extends Prototype
             ValueContractProto.PermittingManyValues,
             ValueContractProto.PermittingKeyValue,
             ValueContractProto.PermittingKeyValueContract,
+            ValueContractProto.PermittingAnyValue,
             ValueContractProto.PermittingPluralValueContract {
 
     record PermittingManyValues<V extends ValueContractProto>(Many<V> permitting)
@@ -43,5 +44,7 @@ public sealed interface ValueContractProto extends Prototype
             implements ValueContractProto, Permitting<KeyValueContractProto.KeyValueContract> {}
     record PermittingPluralValueContract<T extends Plural<ValueContractProto>>(T permitting)
             implements ValueContractProto, Permitting<T> {}
+    record PermittingAnyValue()
+            implements ValueContractProto {}
 
 }

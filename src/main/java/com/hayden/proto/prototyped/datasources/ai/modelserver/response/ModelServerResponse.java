@@ -19,15 +19,12 @@ public sealed interface ModelServerResponse
 
 
     @Builder
-    record RetrievedContextResponse(List<ContextResponse> contextRequests) implements ModelServerResponse {
-    }
+    record RetrievedContextResponse(List<ContextResponse> contextRequests) implements ModelServerResponse {}
 
     @Builder
-    record AddContextResponse(List<ModelContextProtocolContextRequest> modelContextProtocolContextRequests) implements ModelServerResponse {
-    }
+    record AddContextResponse(List<ModelContextProtocolContextRequest> modelContextProtocolContextRequests) implements ModelServerResponse {}
 
     @Builder
-    record ModelServerCodeResponse(ModelServerCodingAiClient.CodeResult codeResult) implements ModelServerResponse {
-    }
+    record ModelServerCodeResponse(ModelServerCodingAiClient.CodeResult codeResult) implements ModelServerResponse {}
 
 }

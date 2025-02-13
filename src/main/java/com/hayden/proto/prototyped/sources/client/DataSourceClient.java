@@ -10,6 +10,7 @@ import com.hayden.utilitymodule.result.error.SingleError;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -22,6 +23,10 @@ public interface DataSourceClient<REQ, RES> extends CompositePrototypedBehavior<
     record DataSourceClientPrototypeError(Set<SingleError> errors)  implements AggregateError.StdAggregateError {
         public DataSourceClientPrototypeError(String errors) {
             this(Arrays.stream(errors.split(",")).map(SingleError::fromMessage).collect(Collectors.toSet()));
+        }
+
+        public DataSourceClientPrototypeError(List<DataSourceClientPrototypeError> errors) {
+            this(errors.stream().map(DataSourceClientPrototypeError::getMessage).collect(Collectors.joining(", ")));
         }
     }
 

@@ -2,7 +2,7 @@ package com.hayden.proto.prototyped.datasources.ai.modelserver.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hayden.proto.prototype.factory.ProtoFactoryConfigTest;
-import com.hayden.proto.prototyped.datasources.ai.modelserver.client.serdes.ModelServerResponseDeser;
+import com.hayden.proto.prototyped.datasources.ai.modelserver.client.serdes.ModelServerCodeResponseDeser;
 import com.hayden.proto.prototyped.datasources.ai.modelserver.response.ModelServerResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,7 @@ class ModelServerCodingAiClientTest {
     }
 
     @Autowired
-    private ModelServerResponseDeser modelServerCodingAiClient;
+    private ModelServerCodeResponseDeser modelServerCodingAiClient;
     @Autowired
     private ModelContextProtocolClient protocolClient;
 
@@ -44,7 +44,7 @@ class ModelServerCodingAiClientTest {
     @Test
     public void testAiClient() {
         ModelServerResponse.ModelServerCodeResponse test = ModelServerResponse.ModelServerCodeResponse.builder()
-                .codeResult(ModelServerCodingAiClient.CodeResult.builder().data("test").build()).build();
+                .codeResult(new ModelServerCodingAiClient.CodeResult("test")).build();
         var f = Assertions.assertDoesNotThrow(() -> OBJECT_MAPPER.writeValueAsString(test));
         var deser = modelServerCodingAiClient.deserialize(f);
         assertThat(deser.isOk()).isTrue();
@@ -53,6 +53,11 @@ class ModelServerCodingAiClientTest {
         var codeRes = (ModelServerResponse.ModelServerCodeResponse) r;
         assertThat(codeRes.codeResult()).isNotNull();
         assertThat(codeRes.codeResult().data()).isEqualTo("test");
+    }
+
+    @Test
+    public void testDeser() {
+
     }
 
 }

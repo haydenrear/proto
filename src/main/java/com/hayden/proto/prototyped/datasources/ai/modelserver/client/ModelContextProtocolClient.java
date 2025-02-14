@@ -36,28 +36,28 @@ public class ModelContextProtocolClient implements RetryableClient<ModelContextP
     ObjectMapper objectMapper;
 
 
-    public Result<ModelServerResponse, DataSourceClient.DataSourceClientPrototypeError> send(ModelContextProtocolRequest request) {
+    public Result<ModelServerResponse, DataSourceClient.Err> send(ModelContextProtocolRequest request) {
         return callWithRetry(request);
     }
 
     @RequestResponse(requestSource = ModelContextProtocolRequest.class, responseSource = ModelServerResponse.class)
-    public Result<ModelServerResponse, DataSourceClient.DataSourceClientPrototypeError> doSend(ModelContextProtocolRequest request) {
+    public Result<ModelServerResponse, DataSourceClient.Err> doSend(ModelContextProtocolRequest request) {
         log.info("send request: {}", request);
 
         // aggregate all the errors for each of the many requests, not failing if only one of them fails but propagating info about each one
-        var res = Result.<ModelContextProtocolContextRequest, DataSourceClient.DataSourceClientPrototypeError>
+        var res = Result.<ModelContextProtocolContextRequest, DataSourceClient.Err>
                         stream(request.getContent().prompt().stream().parallel())
                 .filterResult(Objects::nonNull)
                 .flatMapResult(cr -> Result.fromOptOrErr(
                                 cr.serverDescriptor(),
-                                () -> new DataSourceClient.DataSourceClientPrototypeError("Server descriptor was not found for %s.".formatted(cr)))
+                                () -> new DataSourceClient.Err("Server descriptor was not found for %s.".formatted(cr)))
                         // This toCallToolRequest will be calling LLM and translating
                         .flatMapResult(i -> Result.fromOptOrErr(
                                         cr.toCallToolRequest(),
-                                        () -> new DataSourceClient.DataSourceClientPrototypeError("Tool call request was not found for %s.".formatted(cr)))
+                                        () -> new DataSourceClient.Err("Tool call request was not found for %s.".formatted(cr)))
                                 .flatMapResult(cte -> doCallClientToPromptMessageContent(i, cte))
                                 .flatMapResult(cte -> Result
-                                        .<ContextResponse, DataSourceClient.DataSourceClientPrototypeError>ok(new ContextResponse.MpcPromptMessageContent(cte)))));
+                                        .<ContextResponse, DataSourceClient.Err>ok(new ContextResponse.MpcPromptMessageContent(cte)))));
 
         var collected = res.toList();
 
@@ -65,36 +65,36 @@ public class ModelContextProtocolClient implements RetryableClient<ModelContextP
 
        return collected.errsList().isEmpty()
                ? Result.ok(result)
-               : Result.from(result, new DataSourceClient.DataSourceClientPrototypeError(collected.errsList()));
+               : Result.from(result, new DataSourceClient.Err(collected.errsList()));
     }
 
-    private @Nullable Result<List<PromptMessageContent>, DataSourceClient.DataSourceClientPrototypeError> doCallClientToPromptMessageContent(ModelContextProtocolContextRequest.MpcServerDescriptor i,
-                                                                                                                                             ModelContextProtocolContextRequest.MpcToolsetRequest cte) {
+    private @Nullable Result<List<PromptMessageContent>, DataSourceClient.Err> doCallClientToPromptMessageContent(ModelContextProtocolContextRequest.MpcServerDescriptor i,
+                                                                                                                  ModelContextProtocolContextRequest.MpcToolsetRequest cte) {
         return Result.fromOptOrErr(
                         // TODO: Result.fromMono
                         adapter.doCallClient(i.serverParameters(), cte.toJSONRPCRequest()).blockOptional(),
-                        () -> new DataSourceClient.DataSourceClientPrototypeError("Received empty response from mpc server."))
+                        () -> new DataSourceClient.Err("Received empty response from mpc server."))
                 .flatMap(js -> {
                     try {
                         if (js.result() instanceof Map m) {
                             if (m.containsKey("isError") && m.get("isError") instanceof Boolean b && b) {
-                                return Result.err(new DataSourceClient.DataSourceClientPrototypeError("Received error from mpc server: %s."
+                                return Result.err(new DataSourceClient.Err("Received error from mpc server: %s."
                                         .formatted(js.error())));
                             }
 
                             if (!m.containsKey("content")) {
-                                return Result.err(new DataSourceClient.DataSourceClientPrototypeError("Result from mpc server did not contain any content."));
+                                return Result.err(new DataSourceClient.Err("Result from mpc server did not contain any content."));
                             }
 
                             var found = objectMapper.writeValueAsString(m.get("content"));
                             return Result.ok(objectMapper.readValue(found, new TypeReference<List<PromptMessageContent>>() {}));
                         }
 
-                        return Result.err(new DataSourceClient.DataSourceClientPrototypeError("JSON response from mpc server was of unknown type: %s."
+                        return Result.err(new DataSourceClient.Err("JSON response from mpc server was of unknown type: %s."
                                 .formatted(js.result())));
                     } catch (IOException |
                              NullPointerException e) {
-                        return Result.err(new DataSourceClient.DataSourceClientPrototypeError(SingleError.parseStackTraceToString(e)));
+                        return Result.err(new DataSourceClient.Err(SingleError.parseStackTraceToString(e)));
                     }
                 });
     }

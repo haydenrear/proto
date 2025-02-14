@@ -39,7 +39,7 @@ public class ModelServerValidationAiClient {
     private RestClient modelServerRestClient = RestClient.builder().build();
 
     @RequestResponse(requestSource = ModelServerChatRequest.class, responseSource = ModelServerValidationResponse.class)
-    public Result<ModelServerValidationResponse, DataSourceClient.DataSourceClientPrototypeError> send(ModelServerChatRequest request) {
+    public Result<ModelServerValidationResponse, DataSourceClient.Err> send(ModelServerChatRequest request) {
         return Result.ok(
                 new ModelServerValidationResponse(
                         modelServerRestClient.post()

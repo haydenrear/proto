@@ -9,9 +9,9 @@ import java.util.Optional;
 
 public interface RetryableClient<T extends WithRetryParams, U> {
 
-    Result<U, DataSourceClient.DataSourceClientPrototypeError> doSend(T t);
+    Result<U, DataSourceClient.Err> doSend(T t);
 
-    default Result<U, DataSourceClient.DataSourceClientPrototypeError> callWithRetry(T req) {
+    default Result<U, DataSourceClient.Err> callWithRetry(T req) {
         return Optional.ofNullable(req.getRetryParameters())
                 .filter(r -> r.numRetries() > 1)
                 .map(rp -> new RetryTemplateBuilder()

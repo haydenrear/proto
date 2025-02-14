@@ -1,7 +1,6 @@
 package com.hayden.proto.prototyped.datasources.ai.modelserver.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hayden.proto.prototyped.datasources.ai.modelserver.request.ModelServerEmbeddingRequest;
 import com.hayden.proto.prototyped.sources.client.DataSourceClient;
@@ -10,12 +9,11 @@ import com.hayden.proto.prototyped.sources.client.RequestResponse;
 import com.hayden.proto.prototyped.sources.client.Response;
 import com.hayden.proto.prototyped.sources.data.inputs.request.Body;
 import com.hayden.proto.prototype.datasource.data.inputs.request.BodyContractProto;
-import com.hayden.proto.prototyped.datasources.ai.modelserver.request.ModelServerChatRequest;
 import com.hayden.utilitymodule.result.Result;
 import com.hayden.utilitymodule.result.error.SingleError;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -25,6 +23,7 @@ import org.springframework.web.client.RestClient;
 
 import java.util.Optional;
 
+@Slf4j
 @Scope(DefaultListableBeanFactory.SCOPE_PROTOTYPE)
 @RequiredArgsConstructor
 @Component
@@ -48,7 +47,7 @@ public class ModelServerEmbeddingAiClient {
     private ObjectMapper objectMapper;
 
     @RequestResponse(requestSource = ModelServerEmbeddingRequest.class, responseSource = ModelServerEmbeddingResponse.class)
-    public Result<ModelServerEmbeddingResponse, DataSourceClient.DataSourceClientPrototypeError> send(ModelServerEmbeddingRequest request) {
+    public Result<ModelServerEmbeddingResponse, DataSourceClient.Err> send(ModelServerEmbeddingRequest request) {
         String body = modelServerRestClient.post()
                 .uri(request.getUrl())
                 .body(request.getContent())
@@ -62,8 +61,9 @@ public class ModelServerEmbeddingAiClient {
             var b = objectMapper.readValue(body, EmbeddingResult.class);
             return Result.ok(
                     new ModelServerEmbeddingResponse(b));
-        } catch (JsonProcessingException e) {
-            return Result.err(new DataSourceClient.DataSourceClientPrototypeError(SingleError.parseStackTraceToString(e)));
+        } catch (JsonProcessingException | IllegalArgumentException e) {
+            log.error(e.getMessage(), e);
+            return Result.err(new DataSourceClient.Err(SingleError.parseStackTraceToString(e)));
         }
     }
 

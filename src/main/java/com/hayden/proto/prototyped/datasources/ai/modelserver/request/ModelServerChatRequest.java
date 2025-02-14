@@ -1,5 +1,6 @@
 package com.hayden.proto.prototyped.datasources.ai.modelserver.request;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.Lists;
 import com.hayden.proto.prototype.datasource.data.inputs.request.RetryProto;
 import com.hayden.proto.prototyped.sources.client.RequestSourceDesc;
@@ -74,7 +75,6 @@ public class ModelServerChatRequest implements WithRetryParams {
     @Retry(proto = RetryProto.class)
     @Getter
     RetryParameters retryParameters;
-
 
     public ModelServerChatRequest(ModelServerBody content) {
         this.content = content;

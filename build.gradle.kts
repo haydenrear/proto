@@ -17,14 +17,13 @@ tasks.register("prepareKotlinBuildScriptModel") {}
 dependencies {
     api(project(":shared"))
     api(project(":utilitymodule"))
-    implementation("io.modelcontextprotocol:kotlin-sdk:0.2.0")
 }
 
-tasks.named("compileClojure", ClojureCompile::class.java) {
+tasks.named("compileClojure", ClojureCompile::class) {
     namespaces.add("com.hayden.proto.prototypes")
 }
 
-tasks.named("compileTestClojure", ClojureCompile::class.java) {
+tasks.named("compileTestClojure", ClojureCompile::class) {
     namespaces.add("com.hayden.proto.prototypes-test")
     namespaces.add("com.hayden.proto.prototypes")
 }

@@ -1,31 +1,28 @@
 package com.hayden.proto.prototyped.datasources.ai.modelserver.client.serdes;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hayden.proto.prototyped.datasources.ai.modelserver.response.ModelServerResponse;
-import com.hayden.proto.prototyped.sources.client.DataSourceClient;
-import com.hayden.utilitymodule.result.Result;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import java.util.Map;
+import java.util.Objects;
 
-//@Component
-//@RequiredArgsConstructor
-public interface ModelServerCodeResponseDeser<T> {
+public interface ModelServerCodeResponseDeser<T> extends ModelServerResponseDeser<ModelServerResponse.ModelServerCodeResponse<T>> {
 
-//    @Autowired
-//    private ObjectMapper objectMapper;
-//
-//    private final TypeReference<ModelServerResponse.ModelServerCodeResponse<T>> typeRef;
+    Logger log = LoggerFactory.getLogger(ModelServerCodeResponseDeser.class);
 
-    Result<ModelServerResponse.ModelServerCodeResponse<T>, DataSourceClient.Err> deserialize(String toParser) ;
-//    {
-//        try {
-//            return Result.ok(objectMapper.readValue(toParser, new TypeReference<ModelServerResponse.ModelServerCodeResponse<T>>() {}));
-//        } catch (IOException e) {
-//            throw new RuntimeException("Failed to deserialize model server code response", e);
-//        }
-//    }
+    static boolean matchesCode(String matcher, ObjectMapper om) {
+        try {
+            var m = om.readValue(matcher, new TypeReference<Map<String, Object>>() {});
+            return Objects.equals(m.get("type"), "code");
+        } catch (JsonProcessingException e) {
+            log.error(e.getMessage(), e);
+        }
+        return false;
+    }
+
+
 }

@@ -2,7 +2,7 @@ package com.hayden.proto.prototyped.datasources.ai.modelserver.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hayden.proto.prototype.factory.ProtoFactoryConfigTest;
-import com.hayden.proto.prototyped.datasources.ai.modelserver.client.serdes.ModelServerCodeResponseDeser;
+import com.hayden.proto.prototyped.datasources.ai.modelserver.client.serdes.ModelServerResponseDeser;
 import com.hayden.proto.prototyped.datasources.ai.modelserver.response.ModelServerResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,7 @@ class ModelServerCodingAiClientTest {
     }
 
     @Autowired
-    private ModelServerCodeResponseDeser modelServerCodingAiClient;
+    private ModelServerResponseDeser modelServerCodingAiClient;
     @Autowired
     private ModelContextProtocolClient protocolClient;
 

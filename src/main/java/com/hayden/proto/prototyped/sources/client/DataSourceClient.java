@@ -1,5 +1,6 @@
 package com.hayden.proto.prototyped.sources.client;
 
+import com.google.common.collect.Sets;
 import com.hayden.proto.prototype.datasource.client.DataSourceClientContractProto;
 import com.hayden.proto.prototype.datasource.data.response.ResponseContractProto;
 import com.hayden.proto.prototype.datasource.data.inputs.request.RequestContractProto;
@@ -20,6 +21,11 @@ public interface DataSourceClient<REQ, RES> extends CompositePrototypedBehavior<
     interface DataRecordRequestContract extends RequestContractProto {}
 
     record Err(Set<SingleError> errors)  implements AggregateError.StdAggregateError {
+
+        public Err(Throwable throwable) {
+            this(Sets.newHashSet(SingleError.fromE(throwable)));
+        }
+
         public Err(String errors) {
             this(Arrays.stream(errors.split(",")).map(SingleError::fromMessage).collect(Collectors.toSet()));
         }

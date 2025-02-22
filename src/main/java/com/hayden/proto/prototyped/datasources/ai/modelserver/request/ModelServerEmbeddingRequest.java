@@ -34,10 +34,19 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class ModelServerEmbeddingRequest implements WithRetryParams {
 
+
     @Body(proto = ModelServerRecordProto.class)
-    public record ModelServerBody(@JsonProperty("to_embed") String toEmbed, String model) {
-        public ModelServerBody(String toEmbed) {
+    public record ModelServerBody<T>(@JsonProperty("to_embed") T toEmbed, String model) {
+        public ModelServerBody(T toEmbed) {
             this(toEmbed, null);
+        }
+
+        public ModelServerBody withModel(String model) {
+            return new ModelServerBody(toEmbed, model);
+        }
+
+        public ModelServerBody<T> withNewContent(T t) {
+            return new ModelServerBody<>(t, model);
         }
     }
 
@@ -52,6 +61,12 @@ public class ModelServerEmbeddingRequest implements WithRetryParams {
     @Retry(proto = RetryProto.class)
     @Getter
     RetryParameters retryParameters;
+
+    int maxLength;
+
+    public <T> ModelServerEmbeddingRequest withNewBody(ModelServerBody<T> body) {
+        return new ModelServerEmbeddingRequest(body, headers, url, path, retryParameters, maxLength);
+    }
 
 
     public ModelServerEmbeddingRequest(ModelServerBody content) {

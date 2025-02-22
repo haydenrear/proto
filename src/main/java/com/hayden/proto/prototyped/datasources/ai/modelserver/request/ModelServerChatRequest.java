@@ -76,6 +76,8 @@ public class ModelServerChatRequest implements WithRetryParams {
     @Getter
     RetryParameters retryParameters;
 
+    int maxLength;
+
     public ModelServerChatRequest(ModelServerBody content) {
         this.content = content;
     }

@@ -19,8 +19,10 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 @Slf4j
@@ -48,20 +50,22 @@ public class ModelServerEmbeddingAiClient {
 
     @RequestResponse(requestSource = ModelServerEmbeddingRequest.class, responseSource = ModelServerEmbeddingResponse.class)
     public Result<ModelServerEmbeddingResponse, DataSourceClient.Err> send(ModelServerEmbeddingRequest request) {
-        String body = modelServerRestClient.post()
-                .uri(request.getUrl())
-                .body(request.getContent())
-                .headers(h -> Optional.ofNullable(h)
-                        .flatMap(toAdd -> Optional.ofNullable(request.getHeaders()))
-                        .ifPresent(h::putAll))
-                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .retrieve()
-                .body(String.class);
         try {
+            ModelServerEmbeddingRequest.ModelServerBody thisBody = request.getContent().withNewContent(objectMapper.writeValueAsString(request.getContent().toEmbed()));
+            String body = modelServerRestClient.post()
+                    .uri(request.getUrl())
+                    .body(thisBody)
+                    .headers(h -> Optional.ofNullable(h)
+                            .flatMap(toAdd -> Optional.ofNullable(request.getHeaders()))
+                            .ifPresent(h::putAll))
+                    .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                    .retrieve()
+                    .body(String.class);
             var b = objectMapper.readValue(body, EmbeddingResult.class);
             return Result.ok(
                     new ModelServerEmbeddingResponse(b));
-        } catch (JsonProcessingException | IllegalArgumentException e) {
+        } catch (JsonProcessingException | IllegalArgumentException |
+                 HttpServerErrorException.InternalServerError e) {
             log.error(e.getMessage(), e);
             return Result.err(new DataSourceClient.Err(SingleError.parseStackTraceToString(e)));
         }

@@ -50,7 +50,7 @@ public class TypeDelegateRuleEmission implements TypeRuleEmission, ApplicationCo
         return () -> {
             try {
                 var i = p.getConstructor().newInstance();
-                i.setTarget(t);
+                i.setProgramDescriptorTarget(t);
                 return i;
             } catch (InstantiationException |
                      InvocationTargetException |

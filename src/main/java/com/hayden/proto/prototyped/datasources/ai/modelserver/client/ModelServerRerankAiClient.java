@@ -1,6 +1,8 @@
 package com.hayden.proto.prototyped.datasources.ai.modelserver.client;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hayden.proto.prototype.datasource.data.inputs.request.BodyContractProto;
 import com.hayden.proto.prototyped.datasources.ai.modelserver.request.ModelServerChatRequest;
 import com.hayden.proto.prototyped.datasources.ai.modelserver.request.ModelServerRerankRequest;
@@ -26,11 +28,15 @@ import java.util.Map;
 @Component
 public class ModelServerRerankAiClient {
 
+    @Autowired(required = false)
+    private ObjectMapper objectMapper = new ObjectMapper();
+
     @Builder
     public record RerankDocument(String text, @JsonProperty("doc_id") String docId) {}
 
     @Builder
-    public record RerankResultDocument(String text, int rank, @JsonProperty("doc_id") String docId, @JsonProperty("document_type") String documentType) {}
+    public record RerankResultDocument(String text, int rank, @JsonProperty("doc_id") String docId,
+                                       @JsonProperty("document_type") String documentType) {}
 
     @Builder
     public record ModelServerRerankBody(@JsonProperty("rerank_body") RerankBody rerankBody) implements BodyContractProto {
@@ -57,15 +63,20 @@ public class ModelServerRerankAiClient {
     private RestClient modelServerRestClient = RestClient.builder().build();
 
     public Result<ModelServerRerankResponse, DataSourceClient.Err> send(ModelServerRerankRequest request) {
-        return Result.ok(
-                new ModelServerRerankResponse(
-                        modelServerRestClient.post()
-                                .uri(request.getUrl(), request.getPath())
-                                .body(request.getContent())
-                                .headers(h -> h.putAll(request.getHeaders()))
-                                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                                .retrieve()
-                                .body(RerankResult.class)));
+        String body = modelServerRestClient.post()
+                .uri(request.getUrl(), request.getPath())
+                .body(request.getContent())
+                .headers(h -> h.putAll(request.getHeaders()))
+                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .retrieve()
+                .body(String.class);
+        try {
+            return Result.ok(
+                    new ModelServerRerankResponse(
+                            objectMapper.readValue(body, RerankResult.class)));
+        } catch (JsonProcessingException e) {
+            return Result.err(new DataSourceClient.Err(e)) ;
+        }
     }
 
 }

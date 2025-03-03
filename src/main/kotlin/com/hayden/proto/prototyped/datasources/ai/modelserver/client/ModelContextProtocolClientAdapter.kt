@@ -91,7 +91,7 @@ class ModelContextProtocolClientAdapter {
     }
 
     private fun doCloseAndRemoveMpc(std: ClientTransport, leaveOpen: Boolean, serverParameters: ServerParameters): Mono<JSONRPCResponse?> {
-        return doCloseAndRemoveMpc(std, leaveOpen, serverParameters)
+        return doCloseAndRemoveMpc(std, null, leaveOpen, serverParameters)
     }
 
     private fun doCloseAndRemoveMpc(std: ClientTransport, json: JSONRPCResponse?, leaveOpen: Boolean, serverParameters: ServerParameters): Mono<JSONRPCResponse?> {

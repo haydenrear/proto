@@ -1,0 +1,7 @@
+{
+  "data": {
+    "codeResult": {
+      "data": "\\nimport java.io.IOException;\\nimport java.nio.file.Files;\\nimport java.nio.file.Path;\\nimport java.nio.file.Paths;\\nimport java.util.List;\\nimport java.util.stream.Collectors;\\n\\npublic class CommitDiffSearcher {\\n\\n    public static void main(String[] args) throws IOException {\\n        // Replace with your project directory\\n        Path projectDir = Paths.get(\"test_graph_next\");\\n\\n        // Find all .java files recursively\\n        List<Path> javaFiles = Files.walk(projectDir)\\n                .filter(Files::isRegularFile)\\n                .filter(path -> path.toString().endsWith(\".java\"))\\n                .collect(Collectors.toList());\\n\\n        // Iterate through Java files and search for commit message\\n        for (Path javaFile : javaFiles) {\\n            List<String> lines = Files.readAllLines(javaFile);\\n            for (String line : lines) {\\n                if (line.contains(\"message!\")) {\\n                    System.out.println(\"Found commit message in file: \" + javaFile);\\n                    //Further processing to extract relevant diffs from the file\\n                    // ... (This would involve parsing the Java file to find relevant changes)\\n                }\\n            }\\n        }\\n    }\\n}\\n"
+    }
+  }
+}

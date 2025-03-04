@@ -42,7 +42,7 @@ public record ModelContextProtocolContextRequest(MpcToolsetRequest toolsetReques
 
             @Override
             public MpcServerDescriptor deserialize(JsonParser jsonParser,
-                                                 DeserializationContext deserializationContext) throws IOException {
+                                                   DeserializationContext deserializationContext) throws IOException {
                 var n = jsonParser.readValueAsTree();
                 var env = n.get("env");
                 var cmd = n.get("command");

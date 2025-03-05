@@ -7,10 +7,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.hayden.shared.models.derivative.IComponentDerivative;
-import io.modelcontextprotocol.kotlin.sdk.JSONRPCRequest;
 import lombok.Builder;
-import lombok.SneakyThrows;
 import org.springframework.ai.mcp.client.transport.ServerParameters;
 import org.springframework.ai.mcp.spec.McpSchema;
 
@@ -88,38 +85,110 @@ public record ModelContextProtocolContextRequest(MpcToolsetRequest toolsetReques
         @JsonValue
         McpSchema.JSONRPCRequest toJSONRPCRequest();
 
-        @Builder
-        record SerMpcToolsetRequest(String jsonRpc, String method, String id, Map<String, MpcParam> params) implements MpcToolsetRequest {
+        sealed interface MpcToolsetRequestSchema extends MpcToolsetRequest {
 
-            public SerMpcToolsetRequest(Map<String, MpcParam> params) {
-                this("2.0", "tools/call", UUID.randomUUID().toString(), params);
+            @Builder
+            record PostgresToolsetRequestSchema(String jsonRpc, String method, String id,
+                                                MpcParameters.PostgresMpcArguments params) implements MpcToolsetRequestSchema {
+
+                public PostgresToolsetRequestSchema(MpcParameters.PostgresMpcArguments params) {
+                    this("2.0", "tools/call", UUID.randomUUID().toString(), params);
+                }
+
+                @JsonValue
+                public McpSchema.JSONRPCRequest toJSONRPCRequest() {
+                    return new McpSchema.JSONRPCRequest(jsonRpc, method, id, params);
+                }
             }
 
-            @JsonValue
-            public McpSchema.JSONRPCRequest toJSONRPCRequest() {
-                return new McpSchema.JSONRPCRequest(jsonRpc, method, id, params);
+            @Builder
+            record PostgresListToolsSchema(String jsonRpc, String method, String id,
+                                           MpcParameters.PostgresMpcArguments params) implements MpcToolsetRequestSchema {
+
+                public PostgresListToolsSchema(MpcParameters.PostgresMpcArguments params) {
+                    this("2.0", "tools/list", UUID.randomUUID().toString(), params);
+                }
+
+                @JsonValue
+                public McpSchema.JSONRPCRequest toJSONRPCRequest() {
+                    return new McpSchema.JSONRPCRequest(jsonRpc, method, id, params);
+                }
             }
+
+            @Builder
+            record PostgresReadResourcesSchema(String jsonRpc, String method, String id,
+                                               MpcParameters.PostgresMpcArguments params) implements MpcToolsetRequestSchema {
+
+                public PostgresReadResourcesSchema(MpcParameters.PostgresMpcArguments params) {
+                    this("2.0", "resources/read", UUID.randomUUID().toString(), params);
+                }
+
+                @JsonValue
+                public McpSchema.JSONRPCRequest toJSONRPCRequest() {
+                    return new McpSchema.JSONRPCRequest(jsonRpc, method, id, params);
+                }
+            }
+
+            @Builder
+            record PostgresListResourcesSchema(String jsonRpc, String method, String id,
+                                               MpcParameters.PostgresMpcArguments params) implements MpcToolsetRequestSchema {
+
+                public PostgresListResourcesSchema(MpcParameters.PostgresMpcArguments params) {
+                    this("2.0", "resources/list", UUID.randomUUID().toString(), params);
+                }
+
+                @JsonValue
+                public McpSchema.JSONRPCRequest toJSONRPCRequest() {
+                    return new McpSchema.JSONRPCRequest(jsonRpc, method, id, params);
+                }
+            }
+
         }
+
 
         record PassthroughToolsetRequest(@JsonValue McpSchema.JSONRPCRequest toJSONRPCRequest) implements MpcToolsetRequest {}
 
     }
 
-    public sealed interface MpcParam  {
+    sealed interface MpcParameter {
 
-        record MpcArsParam(@JsonValue Map<String, MpcArg> args) implements MpcParam {}
+        sealed interface MpcArgumentsParameter extends MpcParameter {
 
-        record NameParam(@JsonValue String name) implements MpcParam {}
+            sealed interface MpcArg {
 
-        sealed interface MpcArg {
+                record Sql(@JsonValue String sql) implements MpcArg {}
 
-            record Sql(@JsonValue String sql) implements MpcArg {}
+            }
 
-            record OtherArgs(@JsonValue Map<String, Object> other) implements MpcArg {}
-
-            record OtherArg(@JsonValue String other) implements MpcArg {}
+            record MpcPostgresSqlArguments(MpcArg.Sql sql) implements MpcArgumentsParameter {}
 
         }
     }
+
+    public sealed interface MpcParameters {
+
+        sealed interface PostgresMpcArguments extends MpcParameters {
+
+            record PostgresListToolsArguments()
+                    implements PostgresMpcArguments {}
+
+            record PostgresQueryArguments(MpcParameter.MpcArgumentsParameter.MpcPostgresSqlArguments arguments, String name)
+                    implements PostgresMpcArguments {
+
+                public PostgresQueryArguments(MpcParameter.MpcArgumentsParameter.MpcPostgresSqlArguments arguments) {
+                    this(arguments, "query");
+                }
+
+            }
+
+            record PostgresReadSchemaArguments()
+                    implements PostgresMpcArguments {}
+
+
+            record PostgresListSchemaArguments()
+                    implements PostgresMpcArguments {}
+        }
+    }
+
 
 }

@@ -24,7 +24,8 @@ public class DelegatingModelServerResponseDeser {
                 .findFirst();
         if (first.isPresent()) {
             var modelServerResponseModelServerResponseDeser = first.get();
-            Result<ModelServerResponse, DataSourceClient.Err> deserialize = modelServerResponseModelServerResponseDeser.getValue().deserialize(modelServerResponseModelServerResponseDeser.getKey())
+            Result<ModelServerResponse, DataSourceClient.Err> deserialize = modelServerResponseModelServerResponseDeser.getValue()
+                    .deserialize(modelServerResponseModelServerResponseDeser.getKey())
                     .map(e -> e);
             return deserialize;
         } else {

@@ -49,6 +49,11 @@ public class ModelServerRerankRequest implements WithRetryParams {
         this.content = content;
     }
 
+    @Override
+    public void addExceptionMessage(String exceptionMessage) {
+
+    }
+
     public record ModelServerAiRequestHeaders()
             implements AiRequestConstructProto.AiRestContract.AiRequestHeader {
 

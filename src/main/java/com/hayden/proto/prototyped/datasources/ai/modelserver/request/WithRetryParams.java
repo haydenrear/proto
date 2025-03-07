@@ -4,4 +4,6 @@ public interface WithRetryParams {
 
     RetryParameters getRetryParameters();
 
+    void addExceptionMessage(String exceptionMessage);
+
 }

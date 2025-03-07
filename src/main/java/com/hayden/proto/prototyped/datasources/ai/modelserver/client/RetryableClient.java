@@ -21,7 +21,7 @@ public interface RetryableClient<T extends WithRetryParams, U> {
 
     default Result<U, DataSourceClient.Err> callWithRetry(T req) {
         return Optional.ofNullable(req.getRetryParameters())
-                .filter(r -> r.numRetries() > 1)
+                .filter(r -> r.numRetries() >= 1)
                 .map(rp -> new RetryTemplateBuilder()
                         .maxAttempts(rp.numRetries())
                         .withListener(new RetryListener() {
@@ -32,7 +32,12 @@ public interface RetryableClient<T extends WithRetryParams, U> {
                             }
                         })
                         .build()
-                        .execute(r -> doSend(req)))
+                        .execute(r -> {
+                            Optional.ofNullable(r.getLastThrowable())
+                                    .map(Throwable::getMessage)
+                                            .ifPresent(req::addExceptionMessage);
+                            return doSend(req);
+                        }))
                 .orElseGet(() -> doSend(req));
     }
 

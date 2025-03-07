@@ -34,19 +34,30 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class ModelServerEmbeddingRequest implements WithRetryParams {
 
+    @Override
+    public void addExceptionMessage(String exceptionMessage) {
+        this.content = this.content.withException(exceptionMessage);
+    }
+
 
     @Body(proto = ModelServerRecordProto.class)
-    public record ModelServerBody<T>(@JsonProperty("to_embed") T toEmbed, String model) {
+    public record ModelServerBody<T>(@JsonProperty("to_embed") T toEmbed, String model,
+                @JsonProperty(value = "Retrying request. Saw this message last time - please try again:") String exceptionMessage) {
         public ModelServerBody(T toEmbed) {
-            this(toEmbed, null);
+            this(toEmbed, null, null);
         }
 
         public ModelServerBody withModel(String model) {
-            return new ModelServerBody(toEmbed, model);
+            return new ModelServerBody(toEmbed, model, exceptionMessage);
         }
 
+        public ModelServerBody withException(String exceptionMessage) {
+            return new ModelServerBody(toEmbed, model, exceptionMessage);
+        }
+
+
         public ModelServerBody<T> withNewContent(T t) {
-            return new ModelServerBody<>(t, model);
+            return new ModelServerBody<>(t, model, exceptionMessage);
         }
     }
 

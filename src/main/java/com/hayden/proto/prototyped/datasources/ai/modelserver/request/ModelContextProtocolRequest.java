@@ -1,5 +1,6 @@
 package com.hayden.proto.prototyped.datasources.ai.modelserver.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.hayden.proto.prototype.cardinality.Any;
 import com.hayden.proto.prototype.cardinality.Plural;
 import com.hayden.proto.prototype.datasource.data.KeyContractProto;
@@ -27,8 +28,22 @@ import java.util.List;
 @RequestSourceDesc(proto = ModelContextProtocolRequest.ModelServerApiRequestContractProto.class)
 public class ModelContextProtocolRequest implements WithRetryParams {
 
+    @Override
+    public void addExceptionMessage(String exceptionMessage) {
+        this.content = this.content.withException(exceptionMessage);
+    }
+
     @Body(proto = ModelServerRecordProto.class)
-    public record ContextRequestBatch(List<ModelContextProtocolContextRequest> prompt) {}
+    public record ContextRequestBatch(List<ModelContextProtocolContextRequest> prompt,
+                                      @JsonProperty(value = "Retrying request. Saw this message last time - please try again:") String exceptionMessage) {
+        public ContextRequestBatch(List<ModelContextProtocolContextRequest> prompt) {
+            this(prompt, null);
+        }
+
+        public ContextRequestBatch withException(String message) {
+            return new ContextRequestBatch(prompt, message);
+        }
+    }
 
     ContextRequestBatch content;
 

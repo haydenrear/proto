@@ -1,5 +1,6 @@
 package com.hayden.proto.prototyped.datasources.ai.modelserver.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.Lists;
 import com.hayden.proto.prototype.datasource.data.inputs.request.RetryProto;
@@ -38,6 +39,11 @@ import java.util.List;
 @Builder
 public class ModelServerChatRequest implements WithRetryParams {
 
+    @Override
+    public void addExceptionMessage(String exceptionMessage) {
+        this.content = this.content.withException(exceptionMessage);
+    }
+
     public record ChatMessage(String role, String content) {
         public ChatMessage(String content) {
             this("system", content);
@@ -45,10 +51,15 @@ public class ModelServerChatRequest implements WithRetryParams {
     }
 
     @Body(proto = ModelServerRecordProto.class)
-    public record ModelServerBody(List<ChatMessage> messages, ModelServerRequestType requestType) {
+    public record ModelServerBody(List<ChatMessage> messages, ModelServerRequestType requestType,
+                                  @JsonProperty(value = "Retrying request. Saw this message last time - please try again:") String exceptionMessage) {
+
+        public ModelServerBody(List<ChatMessage> messages, ModelServerRequestType requestType) {
+            this(messages, requestType, null);
+        }
 
         public ModelServerBody(String prompt, ModelServerRequestType requestType) {
-            this(Lists.newArrayList(new ChatMessage(prompt)), requestType);
+            this(Lists.newArrayList(new ChatMessage(prompt)), requestType, null);
         }
 
         public ModelServerBody(String prompt) {
@@ -56,7 +67,11 @@ public class ModelServerChatRequest implements WithRetryParams {
         }
 
         public ModelServerBody withRequestType(ModelServerRequestType requestType) {
-            return new ModelServerBody(this.messages, requestType);
+            return new ModelServerBody(this.messages, requestType, exceptionMessage);
+        }
+
+        public ModelServerBody withException(String exceptionMessage) {
+            return new ModelServerBody(this.messages, requestType, exceptionMessage);
         }
     }
 

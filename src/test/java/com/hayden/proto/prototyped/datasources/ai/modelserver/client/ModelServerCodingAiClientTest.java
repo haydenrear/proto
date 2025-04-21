@@ -4,17 +4,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hayden.proto.prototype.factory.ProtoFactoryConfigTest;
 import com.hayden.proto.prototyped.datasources.ai.modelserver.client.serdes.ModelServerResponseDeser;
 import com.hayden.proto.prototyped.datasources.ai.modelserver.response.ModelServerResponse;
+import com.hayden.utilitymodule.result.Result;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
@@ -30,10 +35,16 @@ class ModelServerCodingAiClientTest {
         }
     }
 
-    @Autowired
+    @MockBean
     private ModelServerResponseDeser modelServerCodingAiClient;
     @Autowired
     private ModelContextProtocolClient protocolClient;
+
+    @BeforeEach
+    public void setUp() {
+        Mockito.when(modelServerCodingAiClient.deserialize(any()))
+                .thenReturn(Result.ok(new ModelServerResponse.ModelServerCodeResponse<>(new ModelServerCodingAiClient.CodeResult<>("test"))));
+    }
 
     @Test
     public void testProtocolClient() {

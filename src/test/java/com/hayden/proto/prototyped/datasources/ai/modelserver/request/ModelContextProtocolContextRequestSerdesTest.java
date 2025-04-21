@@ -3,7 +3,6 @@ package com.hayden.proto.prototyped.datasources.ai.modelserver.request;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
-import org.springframework.ai.mcp.client.transport.ServerParameters;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +27,7 @@ class ModelContextProtocolContextRequestSerdesTest {
 //        assertThat(found).isNotNull();
 //        assertThat(found.serverParams()).isNotNull();
 //        assertThat(found.toolsetRequest()).isNotNull();
-//        assertThat(found.toolsetRequest().toJSONRPCRequest().method()).isEqualTo("tools/call");
+//        assertThat(found.toolsetRequest().toJSONRPCRequest().method()).isEqualTo("results/call");
 //
 //        String okParam = (String) ((Map<String, Object>) found.toolsetRequest().toJSONRPCRequest().params()).get("hello");
 //        var sqlParam = (Map<String, String>) ((Map<String, Object>) found.toolsetRequest().toJSONRPCRequest().params()).get("sql");

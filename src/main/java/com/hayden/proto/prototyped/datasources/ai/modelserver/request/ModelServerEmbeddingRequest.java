@@ -1,5 +1,6 @@
 package com.hayden.proto.prototyped.datasources.ai.modelserver.request;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.hayden.proto.prototype.cardinality.Any;
 import com.hayden.proto.prototype.cardinality.Plural;
@@ -41,8 +42,11 @@ public class ModelServerEmbeddingRequest implements WithRetryParams {
 
 
     @Body(proto = ModelServerRecordProto.class)
-    public record ModelServerBody<T>(@JsonProperty("to_embed") T toEmbed, String model,
-                @JsonProperty(value = "Retrying request. Saw this message last time - please try again:") String exceptionMessage) {
+    public record ModelServerBody<T>(
+            @JsonProperty("to_embed") T toEmbed,
+            String model,
+            @JsonInclude(JsonInclude.Include.NON_EMPTY)
+            @JsonProperty(value = "Retrying request. Saw this message last time - please try again:") String exceptionMessage) {
         public ModelServerBody(T toEmbed) {
             this(toEmbed, null, null);
         }

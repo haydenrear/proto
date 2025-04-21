@@ -1,7 +1,7 @@
 package com.hayden.proto.prototyped.datasources.ai.modelserver.response;
 
-import io.modelcontextprotocol.kotlin.sdk.PromptMessageContent;
-import org.springframework.ai.mcp.spec.McpSchema;
+
+import io.modelcontextprotocol.spec.McpSchema;
 
 import java.util.List;
 
@@ -10,6 +10,6 @@ public sealed interface ContextResponse
             ContextResponse.MpcPromptMessageContent {
 
 
-    record MpcPromptMessageContent(List<PromptMessageContent> toAddToContext) implements ContextResponse {}
+    record MpcPromptMessageContent(List<McpSchema.Content> toAddToContext) implements ContextResponse {}
 
 }

@@ -1,4 +1,4 @@
-package com.hayden.proto.prototyped.datasources.ai.modelserver.request;
+package com.hayden.proto.prototyped.datasources.ai.modelserver.request.mcp;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.hayden.proto.prototype.cardinality.Any;
@@ -11,11 +11,14 @@ import com.hayden.proto.prototype.datasource.data.inputs.request.WireTypeRequest
 import com.hayden.proto.prototype.datasource.data.inputs.request.ai_request.AiRequestConstructProto;
 import com.hayden.proto.prototype.datasource.data.wire.StaticWireProto;
 import com.hayden.proto.prototyped.datasources.ai.modelserver.data.ModelServerRecordProto;
+import com.hayden.proto.prototyped.datasources.ai.modelserver.request.RetryParameters;
+import com.hayden.proto.prototyped.datasources.ai.modelserver.request.WithRetryParams;
 import com.hayden.proto.prototyped.sources.client.RequestSourceDesc;
 import com.hayden.proto.prototyped.sources.data.inputs.request.Body;
 import com.hayden.proto.prototyped.sources.retry.Retry;
 import com.hayden.utilitymodule.ctx.PrototypeScope;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +29,7 @@ import java.util.List;
 @Component
 @PrototypeScope
 @RequestSourceDesc(proto = ModelContextProtocolRequest.ModelServerApiRequestContractProto.class)
+@NoArgsConstructor
 public class ModelContextProtocolRequest implements WithRetryParams {
 
     @Override

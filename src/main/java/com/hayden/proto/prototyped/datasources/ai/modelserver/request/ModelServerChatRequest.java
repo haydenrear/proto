@@ -1,5 +1,6 @@
 package com.hayden.proto.prototyped.datasources.ai.modelserver.request;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.Lists;
@@ -52,6 +53,7 @@ public class ModelServerChatRequest implements WithRetryParams {
 
     @Body(proto = ModelServerRecordProto.class)
     public record ModelServerBody(List<ChatMessage> messages, ModelServerRequestType requestType,
+                                  @JsonInclude(JsonInclude.Include.NON_EMPTY)
                                   @JsonProperty(value = "Retrying request. Saw this message last time - please try again:") String exceptionMessage) {
 
         public ModelServerBody(List<ChatMessage> messages, ModelServerRequestType requestType) {

@@ -2,8 +2,8 @@ package com.hayden.proto.prototyped.datasources.ai.modelserver.client;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hayden.proto.prototyped.datasources.ai.modelserver.request.ModelContextProtocolContextRequest;
-import com.hayden.proto.prototyped.datasources.ai.modelserver.request.ModelContextProtocolRequest;
+import com.hayden.proto.prototyped.datasources.ai.modelserver.request.mcp.ModelContextProtocolContextRequest;
+import com.hayden.proto.prototyped.datasources.ai.modelserver.request.mcp.ModelContextProtocolRequest;
 import com.hayden.proto.prototyped.datasources.ai.modelserver.response.ContextResponse;
 import com.hayden.proto.prototyped.datasources.ai.modelserver.response.ModelServerResponse;
 import com.hayden.proto.prototyped.sources.client.DataClient;
@@ -11,7 +11,7 @@ import com.hayden.proto.prototyped.sources.client.DataSourceClient;
 import com.hayden.proto.prototyped.sources.client.RequestResponse;
 import com.hayden.utilitymodule.result.Result;
 import com.hayden.utilitymodule.result.error.SingleError;
-import io.modelcontextprotocol.kotlin.sdk.PromptMessageContent;
+import io.modelcontextprotocol.spec.McpSchema;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.Nullable;
@@ -30,11 +30,9 @@ import java.util.*;
 @DataClient(proto = ContextModelServerContractProto.class)
 public class ModelContextProtocolClient implements RetryableClient<ModelContextProtocolRequest, ModelServerResponse> {
 
-    @Autowired
-    ModelContextProtocolClientAdapter adapter;
-    @Autowired
-    ObjectMapper objectMapper;
 
+    @Autowired
+    DelegatingSyncMcpClient syncMcpClient;
 
     public Result<ModelServerResponse, DataSourceClient.Err> send(ModelContextProtocolRequest request) {
         return callWithRetry(request);
@@ -55,7 +53,7 @@ public class ModelContextProtocolClient implements RetryableClient<ModelContextP
                         .flatMapResult(i -> Result.fromOptOrErr(
                                         cr.toCallToolRequest(),
                                         () -> new DataSourceClient.Err("Tool call request was not found for %s.".formatted(cr)))
-                                .flatMapResult(cte -> doCallClientToPromptMessageContent(i, cte))
+                                .flatMapResult(cte -> doCallClientToContent(i, cte))
                                 .flatMapResult(cte -> Result
                                         .<ContextResponse, DataSourceClient.Err>ok(new ContextResponse.MpcPromptMessageContent(cte)))));
 
@@ -68,35 +66,10 @@ public class ModelContextProtocolClient implements RetryableClient<ModelContextP
                : Result.from(result, new DataSourceClient.Err(collected.errsList()));
     }
 
-    private @Nullable Result<List<PromptMessageContent>, DataSourceClient.Err> doCallClientToPromptMessageContent(ModelContextProtocolContextRequest.MpcServerDescriptor i,
-                                                                                                                  ModelContextProtocolContextRequest.MpcToolsetRequest cte) {
-        return Result.fromOptOrErr(
-                        // TODO: Result.fromMono
-                        adapter.doCallClient(i.serverParameters(), cte.toJSONRPCRequest()).blockOptional(),
-                        () -> new DataSourceClient.Err("Received empty response from mpc server."))
-                .flatMap(js -> {
-                    try {
-                        if (js.result() instanceof Map m) {
-                            if (m.containsKey("isError") && m.get("isError") instanceof Boolean b && b) {
-                                return Result.err(new DataSourceClient.Err("Received error from mpc server: %s."
-                                        .formatted(js.error())));
-                            }
-
-                            if (!m.containsKey("content")) {
-                                return Result.err(new DataSourceClient.Err("Result from mpc server did not contain any content."));
-                            }
-
-                            var found = objectMapper.writeValueAsString(m.get("content"));
-                            return Result.ok(objectMapper.readValue(found, new TypeReference<List<PromptMessageContent>>() {}));
-                        }
-
-                        return Result.err(new DataSourceClient.Err("JSON response from mpc server was of unknown type: %s."
-                                .formatted(js.result())));
-                    } catch (IOException |
-                             NullPointerException e) {
-                        return Result.err(new DataSourceClient.Err(SingleError.parseStackTraceToString(e)));
-                    }
-                });
+    private @Nullable Result<List<McpSchema.Content>, DataSourceClient.Err> doCallClientToContent(ModelContextProtocolContextRequest.MpcServerDescriptor i,
+                                                                                                  ModelContextProtocolContextRequest.MpcToolsetRequest cte) {
+        return syncMcpClient.callTool(i.serverParameters(), cte.callToolRequest().params())
+                .mapError(mcpError -> new DataSourceClient.Err(mcpError.getMessage()));
     }
 
 }

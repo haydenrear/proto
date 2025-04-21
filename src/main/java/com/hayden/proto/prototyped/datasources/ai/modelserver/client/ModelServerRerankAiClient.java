@@ -35,11 +35,15 @@ public class ModelServerRerankAiClient {
     public record RerankDocument(String text, @JsonProperty("doc_id") String docId) {}
 
     @Builder
-    public record RerankResultDocument(String text, int rank, @JsonProperty("doc_id") String docId,
+    public record RerankResultDocument(String text,
+                                       int rank,
+                                       @JsonProperty("doc_id") String docId,
                                        @JsonProperty("document_type") String documentType) {}
 
     @Builder
-    public record ModelServerRerankBody(@JsonProperty("rerank_body") RerankBody rerankBody) implements BodyContractProto {
+    public record ModelServerRerankBody(
+            @JsonProperty("rerank_body") RerankBody rerankBody
+    ) implements BodyContractProto {
 
 //        public ModelServerRerankBody(RerankBody rerankBody) {
 //            this(null, rerankBody);

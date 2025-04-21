@@ -34,7 +34,7 @@ public class ModelServerClientTest {
 //    @Test
     void send() {
         System.out.println(client);
-        var floated = client.send(new ModelServerEmbeddingRequest(new ModelServerEmbeddingRequest.ModelServerBody("hello!", "text-embedding-004")))
+        var floated = client.send(new ModelServerEmbeddingRequest(new ModelServerEmbeddingRequest.ModelServerBody("hello!", "text-embedding-004", "")))
                 .one()
                 .get().embedding().embedding();
         System.out.println(floated);

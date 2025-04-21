@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.hayden.proto.prototyped.datasources.ai.modelserver.client.ModelServerCodingAiClient;
 import com.hayden.proto.prototyped.datasources.ai.modelserver.client.ModelServerResponseContract;
-import com.hayden.proto.prototyped.datasources.ai.modelserver.request.ModelContextProtocolContextRequest;
+import com.hayden.proto.prototyped.datasources.ai.modelserver.request.mcp.ModelContextProtocolContextRequest;
 import com.hayden.proto.prototyped.sources.client.Response;
 import lombok.Builder;
 

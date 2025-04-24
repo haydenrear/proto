@@ -49,7 +49,7 @@ class ModelServerCodingAiClientTest {
     @Test
     public void testProtocolClient() {
         assertThat(protocolClient).isNotNull();
-        assertThat(protocolClient.adapter).isNotNull();
+        assertThat(protocolClient.syncMcpClient).isNotNull();
     }
 
     @Test

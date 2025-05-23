@@ -7,6 +7,7 @@ import com.hayden.proto.prototyped.datasources.ai.modelserver.client.ModelServer
 import com.hayden.proto.prototyped.datasources.ai.modelserver.request.mcp.ModelContextProtocolContextRequest;
 import com.hayden.proto.prototyped.sources.client.Response;
 import lombok.Builder;
+import org.springframework.ai.chat.messages.AssistantMessage;
 
 import java.util.List;
 
@@ -19,17 +20,11 @@ import java.util.List;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = ModelServerResponse.AddContextResponse.class, name = "add_context"),
         @JsonSubTypes.Type(value = ModelServerResponse.ModelServerCodeResponse.class, name = "code"),
-        @JsonSubTypes.Type(value = ModelServerResponse.RetrievedContextResponse.class, name = "retrieved_context")
 })
 public sealed interface ModelServerResponse
         permits
             ModelServerResponse.AddContextResponse,
-            ModelServerResponse.ModelServerCodeResponse,
-            ModelServerResponse.RetrievedContextResponse {
-
-    @Builder
-    record RetrievedContextResponse(List<ContextResponse> contextRequests)
-            implements ModelServerResponse {}
+            ModelServerResponse.ModelServerCodeResponse {
 
     @Builder
     record AddContextResponse(List<ModelContextProtocolContextRequest> contextRequests)
@@ -38,5 +33,7 @@ public sealed interface ModelServerResponse
     @Builder
     record ModelServerCodeResponse<T>(ModelServerCodingAiClient.CodeResult<T> codeResult)
             implements ModelServerResponse {}
+
+    record ToolCalls(List<AssistantMessage.ToolCall> codeResult){}
 
 }

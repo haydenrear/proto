@@ -11,14 +11,13 @@ plugins {
 group = "com.hayden"
 version = "0.0.1-SNAPSHOT"
 
-
-
 tasks.register("prepareKotlinBuildScriptModel") {}
 
 dependencies {
     api(project(":shared"))
     api(project(":utilitymodule"))
     implementation("cheshire:cheshire:5.13.0")
+
 }
 
 tasks.named("compileClojure", ClojureCompile::class) {

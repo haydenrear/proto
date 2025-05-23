@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.Optional;
 
 @Slf4j
-@Scope(DefaultListableBeanFactory.SCOPE_PROTOTYPE)
 @RequiredArgsConstructor
 @Component
 @DataClient(proto = EmbeddingModelServerContractProto.class)

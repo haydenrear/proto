@@ -2,12 +2,11 @@ package com.hayden.proto.prototyped.datasources.ai.modelserver.request.mcp;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.modelcontextprotocol.spec.McpSchema;
 import lombok.Builder;
 
 import java.util.UUID;
 
-sealed interface PostgresToolSchema extends ModelContextProtocolContextRequest.MpcToolsetRequest {
+sealed interface PostgresToolSchema extends MpcToolsetRequest {
 
     sealed interface PostgresMcpParams extends ModelContextProtocolSchema.MpcParameters {
 
@@ -74,7 +73,7 @@ sealed interface PostgresToolSchema extends ModelContextProtocolContextRequest.M
         }
 
         @JsonValue
-        public ModelContextProtocolContextRequest.ToolsetRequest callToolRequest() {
+        public ToolsetRequest callToolRequest() {
 //            return new McpSchema.JSONRPCRequest(jsonRpc, method, id, params);
             return null;
         }
@@ -91,7 +90,7 @@ sealed interface PostgresToolSchema extends ModelContextProtocolContextRequest.M
         }
 
         @JsonValue
-        public ModelContextProtocolContextRequest.ToolsetRequest callToolRequest() {
+        public ToolsetRequest callToolRequest() {
 //            return new McpSchema.JSONRPCRequest(jsonRpc, method, id, params);
             return null;
         }
@@ -108,7 +107,7 @@ sealed interface PostgresToolSchema extends ModelContextProtocolContextRequest.M
         }
 
         @JsonValue
-        public ModelContextProtocolContextRequest.ToolsetRequest callToolRequest() {
+        public ToolsetRequest callToolRequest() {
 //            return new McpSchema.JSONRPCRequest(jsonRpc, method, id, params);
             return null;
         }
@@ -125,7 +124,7 @@ sealed interface PostgresToolSchema extends ModelContextProtocolContextRequest.M
         }
 
         @JsonValue
-        public ModelContextProtocolContextRequest.ToolsetRequest callToolRequest() {
+        public ToolsetRequest callToolRequest() {
 //            return new McpSchema.JSONRPCRequest(jsonRpc, method, id, params);
             return null;
         }

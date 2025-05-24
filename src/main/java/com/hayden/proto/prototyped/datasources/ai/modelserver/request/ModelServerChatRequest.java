@@ -78,7 +78,7 @@ public class ModelServerChatRequest implements WithRetryParams {
     }
 
     public enum ModelServerRequestType {
-        TOOLSET, CODEGEN, INITIAL_CODE, VALIDATION
+        TOOLSET, CODEGEN, INITIAL_CODE, VALIDATION, RERANK
     }
 
     ModelServerBody content;

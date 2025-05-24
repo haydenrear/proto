@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.hayden.proto.prototyped.datasources.ai.modelserver.client.ModelServerCodingAiClient;
 import com.hayden.proto.prototyped.datasources.ai.modelserver.client.ModelServerResponseContract;
-import com.hayden.proto.prototyped.datasources.ai.modelserver.request.mcp.ModelContextProtocolContextRequest;
 import com.hayden.proto.prototyped.sources.client.Response;
 import lombok.Builder;
 import org.springframework.ai.chat.messages.AssistantMessage;
@@ -18,7 +17,7 @@ import java.util.List;
         property = "type"
 )
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = ModelServerResponse.AddContextResponse.class, name = "add_context"),
+        @JsonSubTypes.Type(value = ModelServerResponse.AddContextResponse.class, name = "tool"),
         @JsonSubTypes.Type(value = ModelServerResponse.ModelServerCodeResponse.class, name = "code"),
 })
 public sealed interface ModelServerResponse
@@ -27,7 +26,7 @@ public sealed interface ModelServerResponse
             ModelServerResponse.ModelServerCodeResponse {
 
     @Builder
-    record AddContextResponse(List<ModelContextProtocolContextRequest> contextRequests)
+    record AddContextResponse(List<AssistantMessage.ToolCall> toolCalls)
             implements ModelServerResponse {}
 
     @Builder

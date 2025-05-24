@@ -18,7 +18,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
-@Scope(DefaultListableBeanFactory.SCOPE_PROTOTYPE)
 @RequiredArgsConstructor
 @Component
 @DataClient(proto = CodingModelServerContractProto.class)

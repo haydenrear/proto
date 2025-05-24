@@ -5,12 +5,11 @@ import com.hayden.proto.prototype.datasource.data.mcp_schema.DefaultValue;
 import com.hayden.proto.prototype.datasource.data.mcp_schema.Description;
 import com.hayden.proto.prototype.datasource.data.mcp_schema.Name;
 import com.hayden.proto.prototype.datasource.data.mcp_schema.Required;
-import io.modelcontextprotocol.spec.McpSchema;
 import lombok.Builder;
 
 import java.util.UUID;
 
-public sealed interface CommitDiffToolSchema extends ModelContextProtocolContextRequest.MpcToolsetRequest {
+public sealed interface CommitDiffToolSchema extends MpcToolsetRequest {
 
     sealed interface CommitDiffMcpParams extends ModelContextProtocolSchema.MpcParameters {
 
@@ -391,7 +390,7 @@ public sealed interface CommitDiffToolSchema extends ModelContextProtocolContext
         }
 
         @JsonValue
-        public ModelContextProtocolContextRequest.ToolsetRequest callToolRequest() {
+        public ToolsetRequest callToolRequest() {
 //            return new McpSchema.JSONRPCRequest(jsonRpc, method, id, params);
             return null;
         }
@@ -411,7 +410,7 @@ public sealed interface CommitDiffToolSchema extends ModelContextProtocolContext
         }
 
         @JsonValue
-        public ModelContextProtocolContextRequest.ToolsetRequest callToolRequest() {
+        public ToolsetRequest callToolRequest() {
 //            return new McpSchema.JSONRPCRequest(jsonRpc, method, id, params);
             return null;
         }
@@ -433,7 +432,7 @@ public sealed interface CommitDiffToolSchema extends ModelContextProtocolContext
         }
 
         @JsonValue
-        public ModelContextProtocolContextRequest.ToolsetRequest callToolRequest() {
+        public ToolsetRequest callToolRequest() {
 //            return new McpSchema.JSONRPCRequest(jsonRpc, method, id, params);
             return null;
         }
@@ -456,7 +455,7 @@ public sealed interface CommitDiffToolSchema extends ModelContextProtocolContext
 
         @JsonIgnore
         @JsonValue
-        public ModelContextProtocolContextRequest.ToolsetRequest callToolRequest() {
+        public ToolsetRequest callToolRequest() {
 //            return new McpSchema.JSONRPCRequest(jsonRpc, method, id, params);
             return null;
         }

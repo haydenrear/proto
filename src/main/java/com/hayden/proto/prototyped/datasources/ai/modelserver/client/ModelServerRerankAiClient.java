@@ -23,7 +23,6 @@ import org.springframework.web.client.RestClient;
 import java.util.List;
 import java.util.Map;
 
-@Scope(DefaultListableBeanFactory.SCOPE_PROTOTYPE)
 @RequiredArgsConstructor
 @Component
 public class ModelServerRerankAiClient {

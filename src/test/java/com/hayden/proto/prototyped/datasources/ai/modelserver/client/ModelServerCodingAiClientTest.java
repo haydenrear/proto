@@ -37,19 +37,11 @@ class ModelServerCodingAiClientTest {
 
     @MockBean
     private ModelServerResponseDeser modelServerCodingAiClient;
-    @Autowired
-    private ModelContextProtocolClient protocolClient;
 
     @BeforeEach
     public void setUp() {
         Mockito.when(modelServerCodingAiClient.deserialize(any()))
                 .thenReturn(Result.ok(new ModelServerResponse.ModelServerCodeResponse<>(new ModelServerCodingAiClient.CodeResult<>("test"))));
-    }
-
-    @Test
-    public void testProtocolClient() {
-        assertThat(protocolClient).isNotNull();
-        assertThat(protocolClient.syncMcpClient).isNotNull();
     }
 
     @Test

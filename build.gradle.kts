@@ -4,7 +4,7 @@ plugins {
     id("com.hayden.no-main-class")
     id("com.hayden.ai")
     id("com.hayden.mcp-client")
-    id("com.hayden.clojure")
+//    id("com.hayden.clojure")
     id("com.hayden.kotlin")
 }
 
@@ -20,12 +20,12 @@ dependencies {
 
 }
 
-tasks.named("compileClojure", ClojureCompile::class) {
-    namespaces.add("com.hayden.proto")
-}
-
-tasks.named("compileTestClojure", ClojureCompile::class) {
-    namespaces.add("com.hayden.proto")
-    namespaces.add("com.hayden.proto")
-}
-
+//tasks.named("compileClojure", ClojureCompile::class) {
+//    namespaces.add("com.hayden.proto")
+//}
+//
+//tasks.named("compileTestClojure", ClojureCompile::class) {
+//    namespaces.add("com.hayden.proto")
+//    namespaces.add("com.hayden.proto")
+//}
+//

@@ -24,6 +24,7 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -46,14 +47,17 @@ import java.util.stream.Stream;
 @Configuration
 @NoArgsConstructor
 @Import(TypeDelegateRuleEmission.class)
+@ConditionalOnProperty(value = "proto.enabled", havingValue = "true")
 public class ProtoFactoryConfig {
 
     @Bean
+    @ConditionalOnProperty(value = "proto.enabled", havingValue = "true")
     public ValidationProtoSourceFactory validationProtoSourceFactory(TypeDelegateRuleEmission typeDelegateRuleEmission) {
         return new ValidationProtoSourceFactoryImpl(typeDelegateRuleEmission);
     }
 
     @Bean
+    @ConditionalOnProperty(value = "proto.enabled", havingValue = "true")
     public BeanFactoryPostProcessor protoSourceFactory(
             @Autowired(required = false) Collection<ProtoSourceFactory> protoSourceFactory
     ) {
@@ -77,12 +81,14 @@ public class ProtoFactoryConfig {
 
 
     @Bean
+    @ConditionalOnProperty(value = "proto.enabled", havingValue = "true")
     @ConditionalOnMissingBean(MetadataRepo.class)
     public MetadataRepo metadataRepo() {
         return new NoOpMetadataRepo();
     }
 
     @Bean
+    @ConditionalOnProperty(value = "proto.enabled", havingValue = "true")
     public CommandLineRunner cmd(List<Prototype> prototypes,
                           ApplicationContext ctx,
                           MetadataRepo metadataRepo) {
@@ -91,6 +97,7 @@ public class ProtoFactoryConfig {
     }
 
     @Bean
+    @ConditionalOnProperty(value = "proto.enabled", havingValue = "true")
     public BeanFactoryPostProcessor beanFactoryPostProcessor(Collection<? extends ProtoFactory> protoFactory) {
         return beanFactory -> protoFactory.stream()
                 .peek(beanFactory::autowireBean)

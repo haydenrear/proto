@@ -54,7 +54,7 @@ public class ModelServerChatRequest implements WithRetryParams {
     @Body(proto = ModelServerRecordProto.class)
     public record ModelServerBody(List<ChatMessage> messages, ModelServerRequestType requestType,
                                   @JsonInclude(JsonInclude.Include.NON_EMPTY)
-                                  @JsonProperty(value = "Retrying request. Saw this message last time - please try again:") String exceptionMessage) {
+                                  @JsonProperty(value = "Retrying request. Saw this getMessage last time - please try again:") String exceptionMessage) {
 
         public ModelServerBody(List<ChatMessage> messages, ModelServerRequestType requestType) {
             this(messages, requestType, null);

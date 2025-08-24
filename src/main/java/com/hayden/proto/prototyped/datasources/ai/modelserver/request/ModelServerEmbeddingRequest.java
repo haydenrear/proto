@@ -46,7 +46,7 @@ public class ModelServerEmbeddingRequest implements WithRetryParams {
             @JsonProperty("to_embed") T toEmbed,
             String model,
             @JsonInclude(JsonInclude.Include.NON_EMPTY)
-            @JsonProperty(value = "Retrying request. Saw this message last time - please try again:") String exceptionMessage) {
+            @JsonProperty(value = "Retrying request. Saw this getMessage last time - please try again:") String exceptionMessage) {
         public ModelServerBody(T toEmbed) {
             this(toEmbed, null, null);
         }

@@ -44,8 +44,8 @@ public class ModelServerEmbeddingAiClient {
 
     @Autowired(required = false)
     private RestClient modelServerRestClient = RestClient.builder().build();
-    @Autowired
-    private ObjectMapper objectMapper;
+    @Autowired(required = false)
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @RequestResponse(requestSource = ModelServerEmbeddingRequest.class, responseSource = ModelServerEmbeddingResponse.class)
     public Result<ModelServerEmbeddingResponse, DataSourceClient.Err> send(ModelServerEmbeddingRequest request) {
